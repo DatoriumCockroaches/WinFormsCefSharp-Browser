@@ -65,6 +65,7 @@
             this.ToolStrip.Size = new System.Drawing.Size(800, 65);
             this.ToolStrip.TabIndex = 1;
             this.ToolStrip.Text = "toolStrip1";
+            this.ToolStrip.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.ToolStrip_ItemClicked);
             // 
             // Back
             // 

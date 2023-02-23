@@ -70,14 +70,15 @@ namespace ChromiumBrowser
         {
             if (e.KeyCode == Keys.Enter)
             {
-                //Find solution to this
-                if (Uri.IsWellFormedUriString("http://"+Address.Text, UriKind.Absolute))
+                string Pattern = @"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$";
+                Regex Rgx = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                if (Rgx.IsMatch(Address.Text))
                 {
-                    chromiumBrowser.LoadUrl(Address.Text);
+                    chromiumBrowser.Load(Address.Text);
                 }
                 else
                 {
-                    chromiumBrowser.LoadUrl("https://www.google.com/search?q=" + Address.Text.Replace(" ", "+"));
+                    chromiumBrowser.Load("https://www.google.com/search?q=" + Address.Text.Replace(" ", "+"));
                 }
             }
         }
@@ -123,6 +124,11 @@ namespace ChromiumBrowser
                 panel1.Width = 0;
             }
             isClosed = !isClosed;
+        }
+
+        private void ToolStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
         }
     }
 }
