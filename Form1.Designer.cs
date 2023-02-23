@@ -42,18 +42,8 @@
             this.BrowserTabs = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.textBox1 = new System.Windows.Forms.Label();
-            this.numericBlue = new System.Windows.Forms.NumericUpDown();
-            this.numericGreen = new System.Windows.Forms.NumericUpDown();
-            this.numericRed = new System.Windows.Forms.NumericUpDown();
-            this.colorBox = new System.Windows.Forms.PictureBox();
             this.ToolStrip.SuspendLayout();
             this.BrowserTabs.SuspendLayout();
-            this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericBlue)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericGreen)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericRed)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.colorBox)).BeginInit();
             this.SuspendLayout();
             // 
             // ToolStrip
@@ -79,7 +69,6 @@
             // Back
             // 
             this.Back.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.Back.Image = global::ChromiumBrowser.Properties.Resources.backButton;
             this.Back.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.Back.Name = "Back";
             this.Back.Size = new System.Drawing.Size(34, 60);
@@ -89,7 +78,6 @@
             // Forward
             // 
             this.Forward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.Forward.Image = global::ChromiumBrowser.Properties.Resources.forwardButton;
             this.Forward.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.Forward.Margin = new System.Windows.Forms.Padding(10, 2, 0, 3);
             this.Forward.Name = "Forward";
@@ -100,7 +88,6 @@
             // reloadButton
             // 
             this.reloadButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.reloadButton.Image = global::ChromiumBrowser.Properties.Resources.refresh;
             this.reloadButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.reloadButton.Name = "reloadButton";
             this.reloadButton.Size = new System.Drawing.Size(34, 60);
@@ -143,7 +130,6 @@
             // settingsBtn
             // 
             this.settingsBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.settingsBtn.Image = global::ChromiumBrowser.Properties.Resources.settings;
             this.settingsBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.settingsBtn.Name = "settingsBtn";
             this.settingsBtn.Size = new System.Drawing.Size(34, 60);
@@ -180,77 +166,11 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.textBox1);
-            this.panel1.Controls.Add(this.numericBlue);
-            this.panel1.Controls.Add(this.numericGreen);
-            this.panel1.Controls.Add(this.numericRed);
-            this.panel1.Controls.Add(this.colorBox);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(400, 65);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(400, 1126);
             this.panel1.TabIndex = 3;
-            // 
-            // textBox1
-            // 
-            this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F);
-            this.textBox1.Location = new System.Drawing.Point(10, 8);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(268, 37);
-            this.textBox1.TabIndex = 4;
-            this.textBox1.Text = "Background color";
-            // 
-            // numericBlue
-            // 
-            this.numericBlue.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F);
-            this.numericBlue.Location = new System.Drawing.Point(268, 188);
-            this.numericBlue.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            this.numericBlue.Name = "numericBlue";
-            this.numericBlue.Size = new System.Drawing.Size(120, 41);
-            this.numericBlue.TabIndex = 3;
-            this.numericBlue.ValueChanged += new System.EventHandler(this.numericBlue_ValueChanged);
-            // 
-            // numericGreen
-            // 
-            this.numericGreen.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F);
-            this.numericGreen.Location = new System.Drawing.Point(143, 188);
-            this.numericGreen.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            this.numericGreen.Name = "numericGreen";
-            this.numericGreen.Size = new System.Drawing.Size(120, 41);
-            this.numericGreen.TabIndex = 2;
-            this.numericGreen.ValueChanged += new System.EventHandler(this.numericGreen_ValueChanged);
-            // 
-            // numericRed
-            // 
-            this.numericRed.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F);
-            this.numericRed.Location = new System.Drawing.Point(17, 188);
-            this.numericRed.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            this.numericRed.Name = "numericRed";
-            this.numericRed.Size = new System.Drawing.Size(120, 41);
-            this.numericRed.TabIndex = 1;
-            this.numericRed.ValueChanged += new System.EventHandler(this.numericRed_ValueChanged);
-            // 
-            // colorBox
-            // 
-            this.colorBox.BackColor = System.Drawing.Color.White;
-            this.colorBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.colorBox.Location = new System.Drawing.Point(17, 63);
-            this.colorBox.Name = "colorBox";
-            this.colorBox.Size = new System.Drawing.Size(371, 119);
-            this.colorBox.TabIndex = 0;
-            this.colorBox.TabStop = false;
             // 
             // Browser
             // 
@@ -266,11 +186,6 @@
             this.ToolStrip.ResumeLayout(false);
             this.ToolStrip.PerformLayout();
             this.BrowserTabs.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.numericBlue)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericGreen)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericRed)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.colorBox)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -288,11 +203,6 @@
         private System.Windows.Forms.ToolStripButton reloadButton;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.ToolStripButton settingsBtn;
-        private System.Windows.Forms.NumericUpDown numericBlue;
-        private System.Windows.Forms.NumericUpDown numericGreen;
-        private System.Windows.Forms.NumericUpDown numericRed;
-        private System.Windows.Forms.PictureBox colorBox;
-        private System.Windows.Forms.Label textBox1;
     }
 }
 

@@ -27,23 +27,12 @@ namespace ChromiumBrowser
         {
             InitializeComponent();
             InitializeBrowser();
-            panel1.Width = 50;
+            panel1.Width = 0;
             Address.BackColor = ToolStrip.BackColor;
-
-
-            InitializePanelElements(false);
 
             this.Text = "My browser";
             this.Icon = Resources.chromium;
             this.Update();
-        }
-
-        private void InitializePanelElements(bool val)
-        {
-            foreach (Control control in panel1.Controls)
-            {
-                control.Visible = val;
-            }
         }
 
         public void InitializeBrowser()
@@ -58,6 +47,7 @@ namespace ChromiumBrowser
 
         private void BrowserResize(object sender, EventArgs e)
         {
+            //This should expand the search bar when browser is enlargened
             Address.Width = this.ClientSize.Width - (Back.Width * 7) - 15;
         }
 
@@ -80,9 +70,8 @@ namespace ChromiumBrowser
         {
             if (e.KeyCode == Keys.Enter)
             {
-                Uri uriResult;
-                if (Uri.TryCreate(Address.Text, UriKind.Absolute, out uriResult)
-                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
+                //Find solution to this
+                if (Uri.IsWellFormedUriString("http://"+Address.Text, UriKind.Absolute))
                 {
                     chromiumBrowser.LoadUrl(Address.Text);
                 }
@@ -121,50 +110,19 @@ namespace ChromiumBrowser
         {
             chromiumBrowser.Reload();
         }
+
         bool isClosed = true;
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
             if (isClosed)
             {
-                panel1.Width = 400;
-                InitializePanelElements(true);
-                MessageBox.Show(colorBox.Width.ToString());
+                panel1.Width = 400;   
             }
             else
             {
-                panel1.Width = 50;
-                InitializePanelElements(false);
+                panel1.Width = 0;
             }
             isClosed = !isClosed;
-        }
-
-        byte redVal, greenVal, blueVal = 0;
-
-        private void numericRed_ValueChanged(object sender, EventArgs e)
-        {
-            redVal = (byte)numericRed.Value;
-            controlColorChange();
-        }
-
-        private void numericGreen_ValueChanged(object sender, EventArgs e)
-        {
-            greenVal = (byte)numericGreen.Value;
-            controlColorChange();
-        }
-
-        private void numericBlue_ValueChanged(object sender, EventArgs e)
-        {
-            blueVal = (byte)numericBlue.Value;
-            controlColorChange();
-        }
-
-        private void controlColorChange()
-        {
-            colorBox.BackColor = Color.FromArgb(redVal, greenVal, blueVal);
-
-            ToolStrip.BackColor = colorBox.BackColor;
-            Address.BackColor = ToolStrip.BackColor;
-            panel1.BackColor = colorBox.BackColor;
         }
     }
 }
