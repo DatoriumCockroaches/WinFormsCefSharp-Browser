@@ -65,10 +65,12 @@
             this.ToolStrip.Size = new System.Drawing.Size(800, 65);
             this.ToolStrip.TabIndex = 1;
             this.ToolStrip.Text = "toolStrip1";
+            this.ToolStrip.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.ToolStrip_ItemClicked);
             // 
             // Back
             // 
             this.Back.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.Back.Image = global::ChromiumBrowser.Properties.Resources.backButton;
             this.Back.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.Back.Name = "Back";
             this.Back.Size = new System.Drawing.Size(34, 60);
@@ -78,6 +80,7 @@
             // Forward
             // 
             this.Forward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.Forward.Image = global::ChromiumBrowser.Properties.Resources.forwardButton;
             this.Forward.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.Forward.Margin = new System.Windows.Forms.Padding(10, 2, 0, 3);
             this.Forward.Name = "Forward";
@@ -88,6 +91,7 @@
             // reloadButton
             // 
             this.reloadButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.reloadButton.Image = global::ChromiumBrowser.Properties.Resources.refresh;
             this.reloadButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.reloadButton.Name = "reloadButton";
             this.reloadButton.Size = new System.Drawing.Size(34, 60);
@@ -130,6 +134,7 @@
             // settingsBtn
             // 
             this.settingsBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.settingsBtn.Image = global::ChromiumBrowser.Properties.Resources.settings;
             this.settingsBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.settingsBtn.Name = "settingsBtn";
             this.settingsBtn.Size = new System.Drawing.Size(34, 60);
