@@ -146,11 +146,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="chromiumbrowser_94289.ico" />
-    <None Include="Resources\searchIcon1.png" />
-    <None Include="Resources\forwardButton1.png" />
-    <None Include="Resources\backButton1.png" />
-    <None Include="Resources\19580304091552644365-1281.png" />
-    <None Include="Resources\11456891461558965378-1281.png" />
     <None Include="Resources\11456891461558965378-128.png" />
     <None Include="Resources\19580304091552644365-128.png" />
     <None Include="Resources\chromiumbrowser_94289.ico" />
