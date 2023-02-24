@@ -26,6 +26,7 @@ namespace ChromiumBrowser
         ChromiumWebBrowser chromiumBrowser = null;
         List<ChromiumWebBrowser> chromiumBrowsers = new List<ChromiumWebBrowser>();
         List<string> visitedPages = new List<string>();
+        int TabNum = 0;
 
         public Browser()
         {
@@ -33,7 +34,7 @@ namespace ChromiumBrowser
             InitializeBrowser();
             panel.Width = 0;
 
-            this.Text = "My browser";
+            this.Text = "Cockroach Browser";
             this.Icon = Resources.chromium;
             this.Update();
         }
@@ -77,6 +78,14 @@ namespace ChromiumBrowser
 
                 string Pattern = @"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$";
                 Regex Rgx = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                if (BrowserTabs.SelectedTab.Name == "History")
+                {
+                    chromiumBrowser = new ChromiumWebBrowser("https://google.com");
+                    BrowserTabs.SelectedTab.Controls.Add(chromiumBrowser);
+                    chromiumBrowser.Dock = DockStyle.Fill;
+
+                    BrowserTabs.TabPages[BrowserTabs.TabCount].Controls.Add(BrowserTabs.SelectedTab);
+                }
 
                 if (Rgx.IsMatch(Address.Text))
                 {
@@ -94,7 +103,8 @@ namespace ChromiumBrowser
         private void AddBrowserTab_Click(object sender, EventArgs e)
         {
             TabPage tabPage = new TabPage();
-            tabPage.Text = "New Tab";
+            tabPage.Text = $"Tab {TabNum}";
+            TabNum = TabNum++;
 
             chromiumBrowser = new ChromiumWebBrowser("https://google.com");
             tabPage.Controls.Add(chromiumBrowser);
@@ -111,7 +121,10 @@ namespace ChromiumBrowser
                 {
                     this.Close();
                 }
-                BrowserTabs.TabPages.Remove(BrowserTabs.SelectedTab);
+                else
+                {
+                    BrowserTabs.TabPages.Remove(BrowserTabs.SelectedTab);
+                }
             }
         }
 
@@ -254,7 +267,8 @@ namespace ChromiumBrowser
             ChromiumWebBrowser chromiumWebBrowser = new ChromiumWebBrowser();
             chromiumWebBrowser.Load(url);
             chromiumWebBrowser.Dock = DockStyle.Fill;
-            page.Text = "New Tab";
+            page.Text = $"Tab {TabNum}";
+            TabNum = TabNum++;
             page.Controls.Add(chromiumWebBrowser);
 
             BrowserTabs.TabPages.Add(page);
