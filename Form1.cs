@@ -15,20 +15,23 @@ using ChromiumBrowser.Properties;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.Security.Policy;
 using System.Text.RegularExpressions;
+using System.Security.Cryptography;
+using System.Reflection.Emit;
 
 namespace ChromiumBrowser
 {
+
     public partial class Browser : Form
     {
         ChromiumWebBrowser chromiumBrowser = null;
         List<ChromiumWebBrowser> chromiumBrowsers = new List<ChromiumWebBrowser>();
+        List<string> visitedPages = new List<string>();
 
         public Browser()
         {
             InitializeComponent();
             InitializeBrowser();
-            panel1.Width = 0;
-            Address.BackColor = ToolStrip.BackColor;
+            panel.Width = 0;
 
             this.Text = "My browser";
             this.Icon = Resources.chromium;
@@ -70,15 +73,20 @@ namespace ChromiumBrowser
         {
             if (e.KeyCode == Keys.Enter)
             {
+                e.SuppressKeyPress = true;
+
                 string Pattern = @"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$";
                 Regex Rgx = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
                 if (Rgx.IsMatch(Address.Text))
                 {
                     chromiumBrowser.Load(Address.Text);
+                    if (!incognitoModeOn) { visitedPages.Add(Address.Text); }
                 }
                 else
                 {
                     chromiumBrowser.Load("https://www.google.com/search?q=" + Address.Text.Replace(" ", "+"));
+                    if (!incognitoModeOn) { visitedPages.Add("https://www.google.com/search?q=" + Address.Text.Replace(" ", "+")); }
                 }
             }
         }
@@ -92,12 +100,12 @@ namespace ChromiumBrowser
             tabPage.Controls.Add(chromiumBrowser);
             chromiumBrowser.Dock = DockStyle.Fill;
 
-            BrowserTabs.TabPages.Add(tabPage);
+            BrowserTabs.TabPages[BrowserTabs.TabCount].Controls.Add(tabPage);
         }
 
         private void removeBrowserTab_Click(object sender, EventArgs e)
         {
-            if (BrowserTabs.SelectedTab!=null)
+            if (BrowserTabs.SelectedTab != null)
             {
                 if (BrowserTabs.TabCount == 1)
                 {
@@ -109,7 +117,23 @@ namespace ChromiumBrowser
 
         private void reloadButton_Click(object sender, EventArgs e)
         {
-            chromiumBrowser.Reload();
+            TabPage page = BrowserTabs.TabPages[BrowserTabs.TabPages.IndexOf(BrowserTabs.SelectedTab)];
+            bool containsInstanceOfChromium = BrowserTabs.Controls.OfType<ChromiumWebBrowser>().Any();
+
+            if (containsInstanceOfChromium)
+            {
+                chromiumBrowser.Reload();
+
+            } 
+            else
+            {
+                while (page.Controls.Count > 0)
+                {
+                    Control control = page.Controls[0];
+                    page.Controls.Remove(control);
+                }
+                GenerateHistory(labelY, page);
+            }
         }
 
         bool isClosed = true;
@@ -117,18 +141,152 @@ namespace ChromiumBrowser
         {
             if (isClosed)
             {
-                panel1.Width = 400;   
+                panel.Width = 400;
             }
             else
             {
-                panel1.Width = 0;
+                panel.Width = 0;
             }
             isClosed = !isClosed;
         }
 
-        private void ToolStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        byte redVal, greenVal, blueVal;
+        private void redUpDown_ValueChanged(object sender, EventArgs e)
         {
-
+            redVal = (byte)redUpDown.Value;
+            changeControlColors();
         }
+
+
+        private void greenUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            greenVal = (byte)greenUpDown.Value;
+            changeControlColors();
+        }
+
+
+        int labelY;
+        int listLength;
+        System.Windows.Forms.Button removeAll;
+        private void historyBtn_Click(object sender, EventArgs e)
+        {
+            TabPage page = new TabPage();
+            page.Text = "History";
+
+            ChromiumWebBrowser browser = new ChromiumWebBrowser();
+            browser.Dock = DockStyle.Fill;
+
+            labelY = 5;
+            BrowserTabs.TabPages.Add(page);
+
+            removeAll = new System.Windows.Forms.Button();
+            removeAll.AutoSize = true;
+            removeAll.Font = new Font("Arial", 10, FontStyle.Regular);
+
+            removeAll.Click += (s, args) =>
+            {
+                while (page.Controls.Count > 0)
+                {
+                    Control control = page.Controls[0];
+                    page.Controls.Remove(control);
+                }
+                visitedPages.Clear();
+            };
+
+
+            removeAll.Text = "Clear history";
+
+            labelY = GenerateHistory(labelY, page);
+            listLength = visitedPages.Count-1;
+
+            removeAll.Location = new Point(10, labelY);
+
+            BrowserTabs.TabPages[BrowserTabs.TabPages.IndexOf(page)].Controls.Add(removeAll);
+        }
+
+       
+        private int GenerateHistory(int labelY, TabPage page)
+        {
+            labelY = 5;
+            foreach (var url in visitedPages)
+            {
+                System.Windows.Forms.Label urlLabel = new System.Windows.Forms.Label();
+
+                System.Windows.Forms.Button btn = new System.Windows.Forms.Button();
+                btn.AutoSize = true;
+                btn.Text = "X";
+                btn.Font = new Font("Arial", 20, FontStyle.Regular);
+
+                urlLabel.Text = url.ToString();
+                urlLabel.Font = new Font("Arial", 30, FontStyle.Regular);
+                urlLabel.AutoSize = true;
+                urlLabel.Location = new Point(10, labelY);
+                urlLabel.ForeColor = Color.Blue;
+                urlLabel.Cursor = Cursors.Hand;
+
+                btn.Location = new Point(urlLabel.Width * 4 + 10 + btn.Width, labelY);
+
+                urlLabel.Click += (s, args) => {
+                    CreateNewTab(url);
+                };
+
+                btn.Click += (s, args) =>
+                {
+                    page.Controls.Remove(btn);
+                    page.Controls.Remove(urlLabel);
+                    visitedPages.Remove(url);
+                };
+
+                BrowserTabs.TabPages[BrowserTabs.TabPages.IndexOf(page)].Controls.Add(urlLabel);
+                BrowserTabs.TabPages[BrowserTabs.TabPages.IndexOf(page)].Controls.Add(btn);
+
+                labelY = urlLabel.Bottom + 5;
+            }
+            BrowserTabs.TabPages[BrowserTabs.TabPages.IndexOf(page)].Controls.Add(removeAll);
+            removeAll.Location = new Point(10, labelY);
+            return labelY;
+        }
+
+        private void CreateNewTab(string url)
+        {
+            TabPage page = new TabPage();
+
+            ChromiumWebBrowser chromiumWebBrowser = new ChromiumWebBrowser();
+            chromiumWebBrowser.Load(url);
+            chromiumWebBrowser.Dock = DockStyle.Fill;
+            page.Text = "New Tab";
+            page.Controls.Add(chromiumWebBrowser);
+
+            BrowserTabs.TabPages.Add(page);
+        }
+
+        bool incognitoModeOn = false;
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            incognitoModeOn = !incognitoModeOn;
+        }
+
+        private void advancedSettings_Click(object sender, EventArgs e)
+        {
+            //TODO add something here
+        }
+
+        private void blueUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            blueVal = (byte)blueUpDown.Value;
+            changeControlColors();
+        }
+
+        private void changeControlColors()
+        {
+            Color color = Color.FromArgb(redVal, greenVal, blueVal);
+            panel.BackColor = color;
+            ToolStrip.BackColor = color;
+            Address.BackColor = color;
+            BrowserTabs.BackColor = color;
+        }
+
     }
 }
+
