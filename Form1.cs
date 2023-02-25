@@ -292,17 +292,11 @@ namespace ChromiumBrowser
                 string url = browser.Address;
                 string domainName = GetDomainName(url);
 
-                //this.Invoke(new Action(() =>
-                //{
-                //    // Check if the domain name matches the regular expression.
-                //    Match match = Regex.Match(domainName, @"^www\.([\w-]+)\.\w+$");
-                //    string tabName = match.Success ? match.Groups[1].Value : domainName;
-                //    tabName = Regex.Replace(tabName, @"\.\w+$", "");
+                this.Invoke(new Action(() =>
+                {
+                    BrowserTabs.SelectedTab.Text = domainName;
+                }));
 
-                //    //Creating a new tab has a bug
-                //    BrowserTabs.SelectedTab.Text = tabName;
-                //}));
-                BrowserTabs.SelectedTab.Text = domainName;
             }
         }
 
