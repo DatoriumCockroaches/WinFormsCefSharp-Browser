@@ -17,6 +17,8 @@ using System.Security.Policy;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using System.Reflection.Emit;
+using CefSharp.DevTools.DOMSnapshot;
+using CefSharp.DevTools.Browser;
 
 namespace ChromiumBrowser
 {
@@ -284,31 +286,45 @@ namespace ChromiumBrowser
 
         private void browser_FrameLoadEnd(object sender, FrameLoadEndEventArgs e)
         {
-            //TODO Fix this
             if (e.Frame.IsMain)
             {
                 ChromiumWebBrowser browser = (ChromiumWebBrowser)sender;
                 string url = browser.Address;
                 string domainName = GetDomainName(url);
 
-                this.Invoke(new Action(() =>
-                {
-                    // Check if the domain name matches the regular expression.
-                    Match match = Regex.Match(domainName, @"^www\.([\w-]+)\.\w+$");
-                    string tabName = match.Success ? match.Groups[1].Value : domainName;
-                    tabName = Regex.Replace(tabName, @"\.\w+$", "");
+                //this.Invoke(new Action(() =>
+                //{
+                //    // Check if the domain name matches the regular expression.
+                //    Match match = Regex.Match(domainName, @"^www\.([\w-]+)\.\w+$");
+                //    string tabName = match.Success ? match.Groups[1].Value : domainName;
+                //    tabName = Regex.Replace(tabName, @"\.\w+$", "");
 
-                    //Creating a new tab has a bug
-                    BrowserTabs.SelectedTab.Text = tabName;
-                }));
+                //    //Creating a new tab has a bug
+                //    BrowserTabs.SelectedTab.Text = tabName;
+                //}));
+                BrowserTabs.SelectedTab.Text = domainName;
             }
         }
 
         private string GetDomainName(string url)
         {
-            Uri uri = new Uri(url);
-            string host = uri.Host;
-            return host.StartsWith("www.") ? host.Substring(4) : host;
+            //Uri uri = new Uri(url);
+            //string host = uri.Host;
+            bool page_safe = url.Contains("https://");
+            bool page_unsafe = url.Contains("https://");
+            string domain_name = null;
+            if (page_safe)
+            {
+                //s.Substring(url + 2)
+                domain_name = url.Substring(8); //this is how many characters are in "https://"
+                domain_name = domain_name.Substring(0, domain_name.IndexOf("/")); //cuts the end off
+            }
+            else if (page_unsafe)
+            {
+                domain_name = url.Substring(7); //this is how many characters are in "http://"
+                domain_name = domain_name.Substring(0, domain_name.IndexOf("/")); //cuts the end off
+            }
+            return domain_name;
         }
 
 
