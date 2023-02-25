@@ -304,18 +304,18 @@ namespace ChromiumBrowser
         {
             //Uri uri = new Uri(url);
             //string host = uri.Host;
-            bool page_safe = url.Contains("https://");
-            bool page_unsafe = url.Contains("https://");
+            bool page_safe = url.Contains("https:");
+            bool page_unsafe = url.Contains("http:");
             string domain_name = null;
             if (page_safe)
             {
                 //s.Substring(url + 2)
-                domain_name = url.Substring(8); //this is how many characters are in "https://"
+                domain_name = url.Substring(12); //this is how many characters are in "https://www."
                 domain_name = domain_name.Substring(0, domain_name.IndexOf("/")); //cuts the end off
             }
             else if (page_unsafe)
             {
-                domain_name = url.Substring(7); //this is how many characters are in "http://"
+                domain_name = url.Substring(11); //this is how many characters are in "http://www."
                 domain_name = domain_name.Substring(0, domain_name.IndexOf("/")); //cuts the end off
             }
             return domain_name;
