@@ -54,15 +54,25 @@ namespace ChromiumBrowser
         {
             if (!incognitoModeOn) { visitedPages.Add(e.Address); }
         }
-
+        int totalWidth = 0;
         private void BrowserResize(object sender, EventArgs e)
         {
-            //This should expand the search bar when browser is enlargened
-            Address.Width = this.ClientSize.Width - (Back.Width * 7) - 15;
+            totalWidth = 0;
+            foreach (ToolStripItem item in ToolStrip.Items)
+            {
+               if (item is ToolStripButton) { continue; }
+               totalWidth += item.Width;
+            }
+            Address.Width = this.ClientSize.Width - totalWidth;
+            MessageBox.Show($"{ClientSize.Width} width, {totalWidth} total, {Address.Width} address");
+            MessageBox.Show($"{ClientSize.Width-totalWidth == Address.Width}");
+
+
         }
 
         private void btnBack_Click(object sender, EventArgs e)
         {
+            chromiumBrowser = BrowserTabs.SelectedTab.Controls.OfType<ChromiumWebBrowser>().FirstOrDefault();
             if (chromiumBrowser.CanGoBack)
             {
                 chromiumBrowser.Back();
@@ -71,6 +81,7 @@ namespace ChromiumBrowser
 
         private void btnForward_Click(object sender, EventArgs e)
         {
+            chromiumBrowser = BrowserTabs.SelectedTab.Controls.OfType<ChromiumWebBrowser>().FirstOrDefault();
             if (chromiumBrowser.CanGoForward)
             {
                 chromiumBrowser.Forward();
@@ -150,6 +161,7 @@ namespace ChromiumBrowser
         {
             TabPage page = BrowserTabs.SelectedTab;
             bool containsInstanceOfChromium = page.Controls.OfType<ChromiumWebBrowser>().Any();
+            chromiumBrowser = BrowserTabs.SelectedTab.Controls.OfType<ChromiumWebBrowser>().FirstOrDefault();
 
             if (containsInstanceOfChromium)
             {

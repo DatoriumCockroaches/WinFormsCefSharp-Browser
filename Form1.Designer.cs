@@ -31,13 +31,9 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Browser));
             this.ToolStrip = new System.Windows.Forms.ToolStrip();
-            this.Back = new System.Windows.Forms.ToolStripButton();
-            this.Forward = new System.Windows.Forms.ToolStripButton();
-            this.reloadButton = new System.Windows.Forms.ToolStripButton();
             this.Address = new System.Windows.Forms.ToolStripTextBox();
             this.AddBrowserTab = new System.Windows.Forms.ToolStripButton();
             this.removeBrowserTab = new System.Windows.Forms.ToolStripButton();
-            this.settingsBtn = new System.Windows.Forms.ToolStripButton();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.BrowserTabs = new System.Windows.Forms.TabControl();
             this.panel = new System.Windows.Forms.Panel();
@@ -50,6 +46,10 @@
             this.label1 = new System.Windows.Forms.Label();
             this.colorBox = new System.Windows.Forms.PictureBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.settingsBtn = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.ToolStrip.SuspendLayout();
             this.panel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.blueUpDown)).BeginInit();
@@ -60,13 +60,12 @@
             // 
             // ToolStrip
             // 
-            this.ToolStrip.AutoSize = false;
             this.ToolStrip.BackColor = System.Drawing.Color.White;
             this.ToolStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.ToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.Back,
-            this.Forward,
-            this.reloadButton,
+            this.toolStripButton3,
+            this.toolStripButton2,
+            this.toolStripButton1,
             this.Address,
             this.AddBrowserTab,
             this.removeBrowserTab,
@@ -74,40 +73,9 @@
             this.ToolStrip.Location = new System.Drawing.Point(0, 0);
             this.ToolStrip.Name = "ToolStrip";
             this.ToolStrip.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
-            this.ToolStrip.Size = new System.Drawing.Size(800, 65);
+            this.ToolStrip.Size = new System.Drawing.Size(800, 55);
             this.ToolStrip.TabIndex = 1;
             this.ToolStrip.Text = "toolStrip1";
-            // 
-            // Back
-            // 
-            this.Back.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.Back.Image = global::ChromiumBrowser.Properties.Resources.backButton;
-            this.Back.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.Back.Name = "Back";
-            this.Back.Size = new System.Drawing.Size(34, 60);
-            this.Back.Text = "Back";
-            this.Back.Click += new System.EventHandler(this.btnBack_Click);
-            // 
-            // Forward
-            // 
-            this.Forward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.Forward.Image = global::ChromiumBrowser.Properties.Resources.forwardButton;
-            this.Forward.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.Forward.Margin = new System.Windows.Forms.Padding(10, 2, 0, 3);
-            this.Forward.Name = "Forward";
-            this.Forward.Size = new System.Drawing.Size(34, 60);
-            this.Forward.Text = "Forward";
-            this.Forward.Click += new System.EventHandler(this.btnForward_Click);
-            // 
-            // reloadButton
-            // 
-            this.reloadButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.reloadButton.Image = global::ChromiumBrowser.Properties.Resources.refresh;
-            this.reloadButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.reloadButton.Name = "reloadButton";
-            this.reloadButton.Size = new System.Drawing.Size(34, 60);
-            this.reloadButton.Text = "Refresh";
-            this.reloadButton.Click += new System.EventHandler(this.reloadButton_Click);
             // 
             // Address
             // 
@@ -115,44 +83,36 @@
             this.Address.Font = new System.Drawing.Font("Segoe UI", 18F);
             this.Address.Margin = new System.Windows.Forms.Padding(0);
             this.Address.Name = "Address";
-            this.Address.Size = new System.Drawing.Size(400, 55);
+            this.Address.Size = new System.Drawing.Size(400, 50);
             this.Address.Text = "Search";
             this.Address.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SearchBarKeyDown);
             this.Address.Click += new System.EventHandler(this.Address_Click);
             // 
             // AddBrowserTab
             // 
+            this.AddBrowserTab.AutoSize = false;
             this.AddBrowserTab.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.AddBrowserTab.Font = new System.Drawing.Font("Segoe UI", 17F);
             this.AddBrowserTab.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.AddBrowserTab.Image = ((System.Drawing.Image)(resources.GetObject("AddBrowserTab.Image")));
             this.AddBrowserTab.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.AddBrowserTab.Name = "AddBrowserTab";
-            this.AddBrowserTab.Size = new System.Drawing.Size(47, 60);
+            this.AddBrowserTab.Size = new System.Drawing.Size(40, 45);
             this.AddBrowserTab.Text = "+";
             this.AddBrowserTab.Click += new System.EventHandler(this.AddBrowserTab_Click);
             // 
             // removeBrowserTab
             // 
+            this.removeBrowserTab.AutoSize = false;
             this.removeBrowserTab.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.removeBrowserTab.Font = new System.Drawing.Font("Segoe UI", 17F);
             this.removeBrowserTab.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.removeBrowserTab.Image = ((System.Drawing.Image)(resources.GetObject("removeBrowserTab.Image")));
             this.removeBrowserTab.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.removeBrowserTab.Name = "removeBrowserTab";
-            this.removeBrowserTab.Size = new System.Drawing.Size(38, 60);
+            this.removeBrowserTab.Size = new System.Drawing.Size(40, 50);
             this.removeBrowserTab.Text = "-";
             this.removeBrowserTab.Click += new System.EventHandler(this.removeBrowserTab_Click);
-            // 
-            // settingsBtn
-            // 
-            this.settingsBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.settingsBtn.Image = global::ChromiumBrowser.Properties.Resources.settings;
-            this.settingsBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.settingsBtn.Name = "settingsBtn";
-            this.settingsBtn.Size = new System.Drawing.Size(34, 60);
-            this.settingsBtn.Text = "Settings";
-            this.settingsBtn.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // contextMenuStrip1
             // 
@@ -165,10 +125,10 @@
             this.BrowserTabs.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
             this.BrowserTabs.Dock = System.Windows.Forms.DockStyle.Fill;
             this.BrowserTabs.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F);
-            this.BrowserTabs.Location = new System.Drawing.Point(0, 65);
+            this.BrowserTabs.Location = new System.Drawing.Point(0, 55);
             this.BrowserTabs.Name = "BrowserTabs";
             this.BrowserTabs.SelectedIndex = 0;
-            this.BrowserTabs.Size = new System.Drawing.Size(800, 684);
+            this.BrowserTabs.Size = new System.Drawing.Size(800, 694);
             this.BrowserTabs.TabIndex = 2;
             // 
             // panel
@@ -182,10 +142,10 @@
             this.panel.Controls.Add(this.label1);
             this.panel.Controls.Add(this.colorBox);
             this.panel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel.Location = new System.Drawing.Point(400, 65);
+            this.panel.Location = new System.Drawing.Point(400, 55);
             this.panel.MaximumSize = new System.Drawing.Size(400, 0);
             this.panel.Name = "panel";
-            this.panel.Size = new System.Drawing.Size(400, 684);
+            this.panel.Size = new System.Drawing.Size(400, 694);
             this.panel.TabIndex = 3;
             // 
             // button1
@@ -280,6 +240,63 @@
             this.colorBox.TabIndex = 0;
             this.colorBox.TabStop = false;
             // 
+            // settingsBtn
+            // 
+            this.settingsBtn.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.settingsBtn.AutoSize = false;
+            this.settingsBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.settingsBtn.Font = new System.Drawing.Font("Segoe UI", 15F);
+            this.settingsBtn.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.settingsBtn.Image = ((System.Drawing.Image)(resources.GetObject("settingsBtn.Image")));
+            this.settingsBtn.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.settingsBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.settingsBtn.Name = "settingsBtn";
+            this.settingsBtn.Size = new System.Drawing.Size(40, 45);
+            this.settingsBtn.Text = "⚙";
+            this.settingsBtn.Click += new System.EventHandler(this.toolStripButton1_Click);
+            // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.AutoSize = false;
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton1.Font = new System.Drawing.Font("Segoe UI", 15F);
+            this.toolStripButton1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+            this.toolStripButton1.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(38, 45);
+            this.toolStripButton1.Text = "♺";
+            this.toolStripButton1.Click += new System.EventHandler(this.reloadButton_Click);
+            // 
+            // toolStripButton2
+            // 
+            this.toolStripButton2.AutoSize = false;
+            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton2.Font = new System.Drawing.Font("Segoe UI", 15F);
+            this.toolStripButton2.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
+            this.toolStripButton2.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton2.Name = "toolStripButton2";
+            this.toolStripButton2.Size = new System.Drawing.Size(40, 45);
+            this.toolStripButton2.Text = ">";
+            this.toolStripButton2.Click += new System.EventHandler(this.btnForward_Click);
+            // 
+            // toolStripButton3
+            // 
+            this.toolStripButton3.AutoSize = false;
+            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton3.Font = new System.Drawing.Font("Segoe UI", 15F);
+            this.toolStripButton3.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
+            this.toolStripButton3.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton3.Name = "toolStripButton3";
+            this.toolStripButton3.Size = new System.Drawing.Size(40, 45);
+            this.toolStripButton3.Text = "<";
+            this.toolStripButton3.Click += new System.EventHandler(this.btnBack_Click);
+            // 
             // Browser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -300,21 +317,18 @@
             ((System.ComponentModel.ISupportInitialize)(this.redUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.colorBox)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
         private System.Windows.Forms.ToolStrip ToolStrip;
         private System.Windows.Forms.ToolStripTextBox Address;
-        private System.Windows.Forms.ToolStripButton Back;
-        private System.Windows.Forms.ToolStripButton Forward;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripButton AddBrowserTab;
         private System.Windows.Forms.TabControl BrowserTabs;
         private System.Windows.Forms.ToolStripButton removeBrowserTab;
-        private System.Windows.Forms.ToolStripButton reloadButton;
         private System.Windows.Forms.Panel panel;
-        private System.Windows.Forms.ToolStripButton settingsBtn;
         private System.Windows.Forms.PictureBox colorBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown blueUpDown;
@@ -324,6 +338,10 @@
         private System.Windows.Forms.Button historyBtn;
         private System.Windows.Forms.Button advancedSettings;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ToolStripButton settingsBtn;
+        private System.Windows.Forms.ToolStripButton toolStripButton3;
+        private System.Windows.Forms.ToolStripButton toolStripButton2;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
     }
 }
 
