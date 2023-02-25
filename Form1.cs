@@ -333,11 +333,25 @@ namespace ChromiumBrowser
             System.Windows.Forms.TextBox txtbox = new System.Windows.Forms.TextBox();
             txtbox.Name = "MainSearch";
             txtbox.Text = "Search";
-            page.Controls.Add(txtbox);
 
             page.Controls.Add(chromiumWebBrowser);
 
             BrowserTabs.TabPages.Add(page);
+
+            txtbox.Click += (s, args) =>
+            {
+                txtbox.Text = "";
+            };
+            txtbox.TextChanged += (s, args) =>
+            {
+
+                string Pattern = @"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$";
+                Regex Rgx = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+                SearchAdress(chromiumBrowser);
+            };
+            page.Controls.Add(txtbox);
+
         }
 
         private void MainSearchBarKeyDown(object sender, KeyEventArgs e)
@@ -447,10 +461,6 @@ namespace ChromiumBrowser
         private void Address_Click(object sender, EventArgs e)
         {
            Address.Text = "";
-        }
-        private void MainSearch_Click(object sender, EventArgs e)
-        {
-            Address.Text = "";
         }
 
         byte redVal, greenVal, blueVal;
