@@ -27,6 +27,7 @@ namespace ChromiumBrowser
         List<ChromiumWebBrowser> chromiumBrowsers = new List<ChromiumWebBrowser>();
       
         List<string> visitedPages = new List<string>();
+        int TabNum = 1;
 
         public Browser()
         {
@@ -34,7 +35,7 @@ namespace ChromiumBrowser
             InitializeBrowser();
             panel.Width = 0;
 
-            this.Text = "My browser";
+            this.Text = "Cockroach Browser";
             this.Icon = Resources.chromium;
             this.Update();
         }
@@ -50,6 +51,8 @@ namespace ChromiumBrowser
 
             BrowserTabs.TabPages[0].Controls.Add(chromiumBrowser);
             chromiumBrowser.Dock = DockStyle.Fill;
+            BrowserTabs.TabPages[0].Name = $"Tab {TabNum}";
+            TabNum = TabNum++;
         }
 
         private void OnBrowserAddressChanged(object sender, AddressChangedEventArgs e)
@@ -82,44 +85,55 @@ namespace ChromiumBrowser
         {
             if (e.KeyCode == Keys.Enter)
             {
+                var tabPage = BrowserTabs.SelectedTab;
                 e.SuppressKeyPress = true;
+
+                // Get the ChromiumWebBrowser control from the tab page
+                var browser = tabPage.Controls.OfType<ChromiumWebBrowser>().FirstOrDefault();
 
                 string Pattern = @"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$";
                 Regex Rgx = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
+                if (BrowserTabs.SelectedTab.Name == "History")
+                {
+                    browser = new ChromiumWebBrowser("https://google.com");
+                    BrowserTabs.SelectedTab.Controls.Add(chromiumBrowser);
+                    browser.Dock = DockStyle.Fill;
+
+                    BrowserTabs.TabPages[BrowserTabs.TabCount].Controls.Add(BrowserTabs.SelectedTab);
+                }
+
                 if (Rgx.IsMatch(Address.Text))
                 {
-                    chromiumBrowser.Load(Address.Text);
+                    browser.Load(Address.Text);
+                    if (!incognitoModeOn) { visitedPages.Add(Address.Text); }
                 }
                 else if (Address.Text == "History")
                 {
-                    chromiumBrowser.Load("https://www.google.com/search?q=" + Address.Text.Replace(" ", "+"));
-                    
+                    browser.Load("https://www.google.com/search?q=" + Address.Text.Replace(" ", "+"));
+                    if (!incognitoModeOn) { visitedPages.Add("https://www.google.com/search?q=" + Address.Text.Replace(" ", "+")); }
                 }
             }
         }
 
         private void AddBrowserTab_Click(object sender, EventArgs e)
         {
-            TabPage tabPage = new TabPage();
-            tabPage.Text = "New Tab";
-
-            chromiumBrowser = new ChromiumWebBrowser("https://google.com");
-            tabPage.Controls.Add(chromiumBrowser);
-            chromiumBrowser.Dock = DockStyle.Fill;
-
-            BrowserTabs.TabPages[BrowserTabs.TabCount].Controls.Add(tabPage);
+            CreateNewTab("google.com");
         }
 
         private void removeBrowserTab_Click(object sender, EventArgs e)
         {
+            TabNum -= 1;
             if (BrowserTabs.SelectedTab != null)
             {
                 if (BrowserTabs.TabCount == 1)
                 {
                     this.Close();
                 }
-                BrowserTabs.TabPages.Remove(BrowserTabs.SelectedTab);
+                else
+                {
+                    BrowserTabs.TabPages.Remove(BrowserTabs.SelectedTab);
+                }
             }
         }
 
@@ -255,29 +269,81 @@ namespace ChromiumBrowser
             return labelY;
         }
 
+        TabPage page;
         private void CreateNewTab(string url)
         {
-            TabPage page = new TabPage();
+            page = new TabPage();
 
             ChromiumWebBrowser chromiumWebBrowser = new ChromiumWebBrowser();
-            chromiumWebBrowser.Load(url);
+
+            if (url != null) { chromiumWebBrowser.Load(url); }
+            else { chromiumWebBrowser.Load("google.com"); }
+
+            chromiumWebBrowser.FrameLoadEnd += browser_FrameLoadEnd;
             chromiumWebBrowser.Dock = DockStyle.Fill;
-            page.Text = "New Tab";
+
+            page.Text = $"Tab {TabNum}";
+
+            TabNum = TabNum+=1;
+
             page.Controls.Add(chromiumWebBrowser);
 
             BrowserTabs.TabPages.Add(page);
         }
+
+        private void browser_FrameLoadEnd(object sender, FrameLoadEndEventArgs e)
+        {
+            //TODO Fix this
+            if (e.Frame.IsMain)
+            {
+                ChromiumWebBrowser browser = (ChromiumWebBrowser)sender;
+                string url = browser.Address;
+                string domainName = GetDomainName(url);
+
+                this.Invoke(new Action(() =>
+                {
+                    // Check if the domain name matches the regular expression.
+                    Match match = Regex.Match(domainName, @"^www\.([\w-]+)\.\w+$");
+                    string tabName = match.Success ? match.Groups[1].Value : domainName;
+                    tabName = Regex.Replace(tabName, @"\.\w+$", "");
+
+                    //Creating a new tab has a bug
+                    BrowserTabs.SelectedTab.Text = tabName;
+                }));
+            }
+        }
+
+        private string GetDomainName(string url)
+        {
+            Uri uri = new Uri(url);
+            string host = uri.Host;
+            return host.StartsWith("www.") ? host.Substring(4) : host;
+        }
+
 
         bool incognitoModeOn = false;
 
         private void button1_Click(object sender, EventArgs e)
         {
             incognitoModeOn = !incognitoModeOn;
+            if (incognitoModeOn == true)
+            {
+                button1.BackColor = Color.Green;
+            }
+            else
+            {
+                button1.BackColor = DefaultBackColor;
+            }
         }
 
         private void advancedSettings_Click(object sender, EventArgs e)
         {
             //TODO add something here
+        }
+
+        private void Address_Click(object sender, EventArgs e)
+        {
+           Address.Text = "";
         }
 
         private void blueUpDown_ValueChanged(object sender, EventArgs e)
