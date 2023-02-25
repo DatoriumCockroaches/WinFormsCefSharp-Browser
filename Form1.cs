@@ -25,6 +25,7 @@ namespace ChromiumBrowser
     {
         ChromiumWebBrowser chromiumBrowser = null;
         List<ChromiumWebBrowser> chromiumBrowsers = new List<ChromiumWebBrowser>();
+      
         List<string> visitedPages = new List<string>();
 
         public Browser()
@@ -44,8 +45,16 @@ namespace ChromiumBrowser
             Cef.Initialize(settings);
 
             chromiumBrowser = new ChromiumWebBrowser("https://google.com");
+
+            chromiumBrowser.AddressChanged += OnBrowserAddressChanged;
+
             BrowserTabs.TabPages[0].Controls.Add(chromiumBrowser);
             chromiumBrowser.Dock = DockStyle.Fill;
+        }
+
+        private void OnBrowserAddressChanged(object sender, AddressChangedEventArgs e)
+        {
+            if (!incognitoModeOn) { visitedPages.Add(e.Address); }
         }
 
         private void BrowserResize(object sender, EventArgs e)
@@ -81,12 +90,11 @@ namespace ChromiumBrowser
                 if (Rgx.IsMatch(Address.Text))
                 {
                     chromiumBrowser.Load(Address.Text);
-                    if (!incognitoModeOn) { visitedPages.Add(Address.Text); }
                 }
-                else
+                else if (Address.Text == "History")
                 {
                     chromiumBrowser.Load("https://www.google.com/search?q=" + Address.Text.Replace(" ", "+"));
-                    if (!incognitoModeOn) { visitedPages.Add("https://www.google.com/search?q=" + Address.Text.Replace(" ", "+")); }
+                    
                 }
             }
         }
