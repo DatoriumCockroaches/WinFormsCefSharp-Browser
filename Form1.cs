@@ -26,7 +26,7 @@ namespace ChromiumBrowser
         ChromiumWebBrowser chromiumBrowser = null;
         List<ChromiumWebBrowser> chromiumBrowsers = new List<ChromiumWebBrowser>();
         List<string> visitedPages = new List<string>();
-        int TabNum = 0;
+        int TabNum = 1;
 
         public Browser()
         {
@@ -76,27 +76,32 @@ namespace ChromiumBrowser
         {
             if (e.KeyCode == Keys.Enter)
             {
+                var tabPage = BrowserTabs.SelectedTab;
                 e.SuppressKeyPress = true;
+
+                // Get the ChromiumWebBrowser control from the tab page
+                var browser = tabPage.Controls.OfType<ChromiumWebBrowser>().FirstOrDefault();
 
                 string Pattern = @"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$";
                 Regex Rgx = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
                 if (BrowserTabs.SelectedTab.Name == "History")
                 {
-                    chromiumBrowser = new ChromiumWebBrowser("https://google.com");
+                    browser = new ChromiumWebBrowser("https://google.com");
                     BrowserTabs.SelectedTab.Controls.Add(chromiumBrowser);
-                    chromiumBrowser.Dock = DockStyle.Fill;
+                    browser.Dock = DockStyle.Fill;
 
                     BrowserTabs.TabPages[BrowserTabs.TabCount].Controls.Add(BrowserTabs.SelectedTab);
                 }
 
                 if (Rgx.IsMatch(Address.Text))
                 {
-                    chromiumBrowser.Load(Address.Text);
+                    browser.Load(Address.Text);
                     if (!incognitoModeOn) { visitedPages.Add(Address.Text); }
                 }
                 else
                 {
-                    chromiumBrowser.Load("https://www.google.com/search?q=" + Address.Text.Replace(" ", "+"));
+                    browser.Load("https://www.google.com/search?q=" + Address.Text.Replace(" ", "+"));
                     if (!incognitoModeOn) { visitedPages.Add("https://www.google.com/search?q=" + Address.Text.Replace(" ", "+")); }
                 }
             }
@@ -104,19 +109,12 @@ namespace ChromiumBrowser
 
         private void AddBrowserTab_Click(object sender, EventArgs e)
         {
-            TabPage tabPage = new TabPage();
-            tabPage.Text = $"Tab {TabNum}";
-            TabNum = TabNum++;
-
-            chromiumBrowser = new ChromiumWebBrowser("https://google.com");
-            tabPage.Controls.Add(chromiumBrowser);
-            chromiumBrowser.Dock = DockStyle.Fill;
-
-            BrowserTabs.TabPages[BrowserTabs.TabCount].Controls.Add(tabPage);
+            CreateNewTab("google.com");
         }
 
         private void removeBrowserTab_Click(object sender, EventArgs e)
         {
+            TabNum -= 1;
             if (BrowserTabs.SelectedTab != null)
             {
                 if (BrowserTabs.TabCount == 1)
@@ -262,19 +260,57 @@ namespace ChromiumBrowser
             return labelY;
         }
 
+        TabPage page;
         private void CreateNewTab(string url)
         {
-            TabPage page = new TabPage();
+            page = new TabPage();
 
             ChromiumWebBrowser chromiumWebBrowser = new ChromiumWebBrowser();
-            chromiumWebBrowser.Load(url);
+
+            if (url != null) { chromiumWebBrowser.Load(url); }
+            else { chromiumWebBrowser.Load("google.com"); }
+
+            chromiumWebBrowser.FrameLoadEnd += browser_FrameLoadEnd;
             chromiumWebBrowser.Dock = DockStyle.Fill;
+
             page.Text = $"Tab {TabNum}";
-            TabNum = TabNum++;
+
+            TabNum = TabNum+=1;
+
             page.Controls.Add(chromiumWebBrowser);
 
             BrowserTabs.TabPages.Add(page);
         }
+
+        private void browser_FrameLoadEnd(object sender, FrameLoadEndEventArgs e)
+        {
+            //TODO Fix this
+            if (e.Frame.IsMain)
+            {
+                ChromiumWebBrowser browser = (ChromiumWebBrowser)sender;
+                string url = browser.Address;
+                string domainName = GetDomainName(url);
+
+                this.Invoke(new Action(() =>
+                {
+                    // Check if the domain name matches the regular expression.
+                    Match match = Regex.Match(domainName, @"^www\.([\w-]+)\.\w+$");
+                    string tabName = match.Success ? match.Groups[1].Value : domainName;
+                    tabName = Regex.Replace(tabName, @"\.\w+$", "");
+
+                    //Creating a new tab has a bug
+                    BrowserTabs.SelectedTab.Text = tabName;
+                }));
+            }
+        }
+
+        private string GetDomainName(string url)
+        {
+            Uri uri = new Uri(url);
+            string host = uri.Host;
+            return host.StartsWith("www.") ? host.Substring(4) : host;
+        }
+
 
         bool incognitoModeOn = false;
 
@@ -298,7 +334,7 @@ namespace ChromiumBrowser
 
         private void Address_Click(object sender, EventArgs e)
         {
-            Address.Text = "";
+           Address.Text = "";
         }
 
         private void blueUpDown_ValueChanged(object sender, EventArgs e)
