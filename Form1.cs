@@ -63,10 +63,6 @@ namespace ChromiumBrowser
                if (item is ToolStripButton) { continue; }
                totalWidth += item.Width;
             }
-            Address.Width = this.ClientSize.Width - totalWidth;
-            MessageBox.Show($"{ClientSize.Width} width, {totalWidth} total, {Address.Width} address");
-            MessageBox.Show($"{ClientSize.Width-totalWidth == Address.Width}");
-
 
         }
 
@@ -101,6 +97,20 @@ namespace ChromiumBrowser
                 Regex Rgx = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
                 if (tabPage.Text == "History")
+                {
+                    chromiumBrowser = new ChromiumWebBrowser();
+                    chromiumBrowser.AddressChanged += OnBrowserAddressChanged;
+                    chromiumBrowser.FrameLoadEnd += browser_FrameLoadEnd;
+                    chromiumBrowser.Dock = DockStyle.Fill;
+
+                    while (tabPage.Controls.Count > 0)
+                    {
+                        Control control = tabPage.Controls[0];
+                        tabPage.Controls.Remove(control);
+                    }
+                    tabPage.Controls.Add(chromiumBrowser);
+                }
+                if (tabPage.Text.StartsWith("Tab"))
                 {
                     chromiumBrowser = new ChromiumWebBrowser();
                     chromiumBrowser.AddressChanged += OnBrowserAddressChanged;
@@ -309,20 +319,71 @@ namespace ChromiumBrowser
 
             ChromiumWebBrowser chromiumWebBrowser = new ChromiumWebBrowser();
 
-            if (url != null) { chromiumWebBrowser.Load(url); }
-            else { chromiumWebBrowser.Load("google.com"); }
+            //if (url != null) { chromiumWebBrowser.Load(url); }
+            //else { chromiumWebBrowser.Load("google.com"); }
 
-            chromiumWebBrowser.FrameLoadEnd += browser_FrameLoadEnd;
-            chromiumWebBrowser.AddressChanged += OnBrowserAddressChanged;
+            //chromiumWebBrowser.FrameLoadEnd += browser_FrameLoadEnd;
+            //chromiumWebBrowser.AddressChanged += OnBrowserAddressChanged;
             chromiumWebBrowser.Dock = DockStyle.Fill;
 
             page.Text = $"Tab {TabNum}";
 
             TabNum = TabNum+=1;
 
+            System.Windows.Forms.TextBox txtbox = new System.Windows.Forms.TextBox();
+            txtbox.Name = "MainSearch";
+            txtbox.Text = "Search";
+            page.Controls.Add(txtbox);
+
             page.Controls.Add(chromiumWebBrowser);
 
             BrowserTabs.TabPages.Add(page);
+        }
+
+        private void MainSearchBarKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                var tabPage = BrowserTabs.SelectedTab;
+                e.SuppressKeyPress = true;
+
+                // Get the ChromiumWebBrowser control from the tab page
+                chromiumBrowser = tabPage.Controls.OfType<ChromiumWebBrowser>().FirstOrDefault();
+
+                string Pattern = @"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$";
+                Regex Rgx = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+                if (tabPage.Text == "History")
+                {
+                    chromiumBrowser = new ChromiumWebBrowser();
+                    chromiumBrowser.AddressChanged += OnBrowserAddressChanged;
+                    chromiumBrowser.FrameLoadEnd += browser_FrameLoadEnd;
+                    chromiumBrowser.Dock = DockStyle.Fill;
+
+                    while (tabPage.Controls.Count > 0)
+                    {
+                        Control control = tabPage.Controls[0];
+                        tabPage.Controls.Remove(control);
+                    }
+                    tabPage.Controls.Add(chromiumBrowser);
+                }
+                if (tabPage.Text.StartsWith("Tab"))
+                {
+                    chromiumBrowser = new ChromiumWebBrowser();
+                    chromiumBrowser.AddressChanged += OnBrowserAddressChanged;
+                    chromiumBrowser.FrameLoadEnd += browser_FrameLoadEnd;
+                    chromiumBrowser.Dock = DockStyle.Fill;
+
+                    while (tabPage.Controls.Count > 0)
+                    {
+                        Control control = tabPage.Controls[0];
+                        tabPage.Controls.Remove(control);
+                    }
+                    tabPage.Controls.Add(chromiumBrowser);
+                }
+
+                SearchAdress(chromiumBrowser);
+            }
         }
 
         private void browser_FrameLoadEnd(object sender, FrameLoadEndEventArgs e)
@@ -386,6 +447,10 @@ namespace ChromiumBrowser
         private void Address_Click(object sender, EventArgs e)
         {
            Address.Text = "";
+        }
+        private void MainSearch_Click(object sender, EventArgs e)
+        {
+            Address.Text = "";
         }
 
         byte redVal, greenVal, blueVal;
