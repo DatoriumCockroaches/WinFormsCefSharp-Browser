@@ -47,6 +47,8 @@ namespace ChromiumBrowser
             chromiumBrowser = new ChromiumWebBrowser("https://google.com");
             BrowserTabs.TabPages[0].Controls.Add(chromiumBrowser);
             chromiumBrowser.Dock = DockStyle.Fill;
+            BrowserTabs.TabPages[0].Name = $"Tab {TabNum}";
+            TabNum = TabNum++;
         }
 
         private void BrowserResize(object sender, EventArgs e)
@@ -279,11 +281,24 @@ namespace ChromiumBrowser
         private void button1_Click(object sender, EventArgs e)
         {
             incognitoModeOn = !incognitoModeOn;
+            if (incognitoModeOn == true)
+            {
+                button1.BackColor = Color.Green;
+            }
+            else
+            {
+                button1.BackColor = DefaultBackColor;
+            }
         }
 
         private void advancedSettings_Click(object sender, EventArgs e)
         {
             //TODO add something here
+        }
+
+        private void Address_Click(object sender, EventArgs e)
+        {
+            Address.Text = "";
         }
 
         private void blueUpDown_ValueChanged(object sender, EventArgs e)
