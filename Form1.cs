@@ -27,6 +27,7 @@ namespace ChromiumBrowser
     {
         ChromiumWebBrowser chromiumBrowser = null;
         List<ChromiumWebBrowser> chromiumBrowsers = new List<ChromiumWebBrowser>();
+      
         List<string> visitedPages = new List<string>();
         int TabNum = 1;
 
@@ -46,11 +47,12 @@ namespace ChromiumBrowser
             var settings = new CefSettings();
             Cef.Initialize(settings);
 
-            chromiumBrowser = new ChromiumWebBrowser("https://google.com");
-            BrowserTabs.TabPages[0].Controls.Add(chromiumBrowser);
-            chromiumBrowser.Dock = DockStyle.Fill;
-            BrowserTabs.TabPages[0].Name = $"Tab {TabNum}";
-            TabNum = TabNum++;
+            CreateNewTab("google.com");
+        }
+
+        private void OnBrowserAddressChanged(object sender, AddressChangedEventArgs e)
+        {
+            if (!incognitoModeOn) { visitedPages.Add(e.Address); }
         }
 
         private void BrowserResize(object sender, EventArgs e)
@@ -82,30 +84,44 @@ namespace ChromiumBrowser
                 e.SuppressKeyPress = true;
 
                 // Get the ChromiumWebBrowser control from the tab page
-                var browser = tabPage.Controls.OfType<ChromiumWebBrowser>().FirstOrDefault();
+                chromiumBrowser = tabPage.Controls.OfType<ChromiumWebBrowser>().FirstOrDefault();
 
                 string Pattern = @"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$";
                 Regex Rgx = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-                if (BrowserTabs.SelectedTab.Name == "History")
+                if (tabPage.Text == "History")
                 {
-                    browser = new ChromiumWebBrowser("https://google.com");
-                    BrowserTabs.SelectedTab.Controls.Add(chromiumBrowser);
-                    browser.Dock = DockStyle.Fill;
+                    chromiumBrowser = new ChromiumWebBrowser();
+                    chromiumBrowser.AddressChanged += OnBrowserAddressChanged;
+                    chromiumBrowser.FrameLoadEnd += browser_FrameLoadEnd;
+                    chromiumBrowser.Dock = DockStyle.Fill;
 
-                    BrowserTabs.TabPages[BrowserTabs.TabCount].Controls.Add(BrowserTabs.SelectedTab);
+                    while (tabPage.Controls.Count > 0)
+                    {
+                        Control control = tabPage.Controls[0];
+                        tabPage.Controls.Remove(control);
+                    }
+                    tabPage.Controls.Add(chromiumBrowser);
                 }
 
-                if (Rgx.IsMatch(Address.Text))
-                {
-                    browser.Load(Address.Text);
-                    if (!incognitoModeOn) { visitedPages.Add(Address.Text); }
-                }
-                else
-                {
-                    browser.Load("https://www.google.com/search?q=" + Address.Text.Replace(" ", "+"));
-                    if (!incognitoModeOn) { visitedPages.Add("https://www.google.com/search?q=" + Address.Text.Replace(" ", "+")); }
-                }
+                SearchAdress(chromiumBrowser);            }
+        }
+
+        private void SearchAdress(ChromiumWebBrowser browser)
+        {
+            if (Address.Text == null) { return; } 
+
+            string Pattern = @"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$";
+            Regex Rgx = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+
+            if (Rgx.IsMatch(Address.Text))
+            {
+                browser.Load(Address.Text);
+            }
+            else
+            {
+                browser.Load("https://www.google.com/search?q=" + Address.Text.Replace(" ", "+"));
             }
         }
 
@@ -132,15 +148,14 @@ namespace ChromiumBrowser
 
         private void reloadButton_Click(object sender, EventArgs e)
         {
-            TabPage page = BrowserTabs.TabPages[BrowserTabs.TabPages.IndexOf(BrowserTabs.SelectedTab)];
-            bool containsInstanceOfChromium = BrowserTabs.Controls.OfType<ChromiumWebBrowser>().Any();
+            TabPage page = BrowserTabs.SelectedTab;
+            bool containsInstanceOfChromium = page.Controls.OfType<ChromiumWebBrowser>().Any();
 
             if (containsInstanceOfChromium)
             {
                 chromiumBrowser.Reload();
-
             } 
-            else
+            else if(page.Text == "History")
             {
                 while (page.Controls.Count > 0)
                 {
@@ -165,24 +180,10 @@ namespace ChromiumBrowser
             isClosed = !isClosed;
         }
 
-        byte redVal, greenVal, blueVal;
-        private void redUpDown_ValueChanged(object sender, EventArgs e)
-        {
-            redVal = (byte)redUpDown.Value;
-            changeControlColors();
-        }
-
-
-        private void greenUpDown_ValueChanged(object sender, EventArgs e)
-        {
-            greenVal = (byte)greenUpDown.Value;
-            changeControlColors();
-        }
-
-
         int labelY;
-        int listLength;
+ 
         System.Windows.Forms.Button removeAll;
+        System.Windows.Forms.Button removeSelected;
         private void historyBtn_Click(object sender, EventArgs e)
         {
             TabPage page = new TabPage();
@@ -198,6 +199,10 @@ namespace ChromiumBrowser
             removeAll.AutoSize = true;
             removeAll.Font = new Font("Arial", 10, FontStyle.Regular);
 
+            removeSelected = new System.Windows.Forms.Button();
+            removeSelected.AutoSize = true;
+            removeSelected.Font = new Font("Arial", 10, FontStyle.Regular);
+
             removeAll.Click += (s, args) =>
             {
                 while (page.Controls.Count > 0)
@@ -208,18 +213,28 @@ namespace ChromiumBrowser
                 visitedPages.Clear();
             };
 
+            removeSelected.Click += (s, args) =>
+            {
+                while (controlsToRemove.Count > 0)
+                {
+                    page.Controls.Remove(controlsToRemove[0]);
+                    controlsToRemove.RemoveAt(0);
+                }
+            };
 
             removeAll.Text = "Clear history";
+            removeSelected.Text = "Clear selected";
 
             labelY = GenerateHistory(labelY, page);
-            listLength = visitedPages.Count-1;
 
             removeAll.Location = new Point(10, labelY);
+            removeSelected.Location = new Point(10, labelY+35);
 
             BrowserTabs.TabPages[BrowserTabs.TabPages.IndexOf(page)].Controls.Add(removeAll);
+            BrowserTabs.TabPages[BrowserTabs.TabPages.IndexOf(page)].Controls.Add(removeSelected);
         }
 
-       
+        List<Control> controlsToRemove = new List<Control>();
         private int GenerateHistory(int labelY, TabPage page)
         {
             labelY = 5;
@@ -227,29 +242,38 @@ namespace ChromiumBrowser
             {
                 System.Windows.Forms.Label urlLabel = new System.Windows.Forms.Label();
 
-                System.Windows.Forms.Button btn = new System.Windows.Forms.Button();
+                CheckBox btn = new CheckBox();
                 btn.AutoSize = true;
                 btn.Text = "X";
-                btn.Font = new Font("Arial", 20, FontStyle.Regular);
+                btn.Font = new Font("Arial", 10, FontStyle.Regular);
 
                 urlLabel.Text = url.ToString();
-                urlLabel.Font = new Font("Arial", 30, FontStyle.Regular);
+                urlLabel.Font = new Font("Arial", 10, FontStyle.Regular);
                 urlLabel.AutoSize = true;
-                urlLabel.Location = new Point(10, labelY);
+                urlLabel.Location = new Point(30, labelY);
                 urlLabel.ForeColor = Color.Blue;
                 urlLabel.Cursor = Cursors.Hand;
 
-                btn.Location = new Point(urlLabel.Width * 4 + 10 + btn.Width, labelY);
+                btn.Location = new Point(10, labelY);
 
                 urlLabel.Click += (s, args) => {
                     CreateNewTab(url);
                 };
 
-                btn.Click += (s, args) =>
+                btn.CheckedChanged += (s, args) =>
                 {
-                    page.Controls.Remove(btn);
-                    page.Controls.Remove(urlLabel);
-                    visitedPages.Remove(url);
+                    if (btn.Checked)
+                    {
+                        controlsToRemove.Add(btn);
+                        controlsToRemove.Add(urlLabel);
+                        visitedPages.Remove(urlLabel.Text);
+                    }
+                    else
+                    {
+                        controlsToRemove.Remove(btn);
+                        controlsToRemove.Remove(urlLabel); 
+                        visitedPages.Add(urlLabel.Text);
+                    }
                 };
 
                 BrowserTabs.TabPages[BrowserTabs.TabPages.IndexOf(page)].Controls.Add(urlLabel);
@@ -257,7 +281,11 @@ namespace ChromiumBrowser
 
                 labelY = urlLabel.Bottom + 5;
             }
+
             BrowserTabs.TabPages[BrowserTabs.TabPages.IndexOf(page)].Controls.Add(removeAll);
+            BrowserTabs.TabPages[BrowserTabs.TabPages.IndexOf(page)].Controls.Add(removeSelected);
+
+            removeSelected.Location = new Point(10, labelY+35);
             removeAll.Location = new Point(10, labelY);
             return labelY;
         }
@@ -273,6 +301,7 @@ namespace ChromiumBrowser
             else { chromiumWebBrowser.Load("google.com"); }
 
             chromiumWebBrowser.FrameLoadEnd += browser_FrameLoadEnd;
+            chromiumWebBrowser.AddressChanged += OnBrowserAddressChanged;
             chromiumWebBrowser.Dock = DockStyle.Fill;
 
             page.Text = $"Tab {TabNum}";
@@ -345,6 +374,19 @@ namespace ChromiumBrowser
         private void Address_Click(object sender, EventArgs e)
         {
            Address.Text = "";
+        }
+
+        byte redVal, greenVal, blueVal;
+        private void redUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            redVal = (byte)redUpDown.Value;
+            changeControlColors();
+        }
+
+        private void greenUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            greenVal = (byte)greenUpDown.Value;
+            changeControlColors();
         }
 
         private void blueUpDown_ValueChanged(object sender, EventArgs e)
