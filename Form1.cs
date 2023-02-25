@@ -125,24 +125,25 @@ namespace ChromiumBrowser
                     tabPage.Controls.Add(chromiumBrowser);
                 }
 
-                SearchAdress(chromiumBrowser);            }
+                SearchAdress(chromiumBrowser, Address.Text);            
+            }
         }
 
-        private void SearchAdress(ChromiumWebBrowser browser)
+        private void SearchAdress(ChromiumWebBrowser browser, string url)
         {
-            if (Address.Text == null) { return; } 
+            if (url == null) { return; } 
 
             string Pattern = @"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$";
             Regex Rgx = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
 
-            if (Rgx.IsMatch(Address.Text))
+            if (Rgx.IsMatch(url))
             {
-                browser.Load(Address.Text);
+                browser.Load(url);
             }
             else
             {
-                browser.Load("https://www.google.com/search?q=" + Address.Text.Replace(" ", "+"));
+                browser.Load("https://www.google.com/search?q=" + url.Replace(" ", "+"));
             }
         }
 
@@ -319,11 +320,6 @@ namespace ChromiumBrowser
 
             ChromiumWebBrowser chromiumWebBrowser = new ChromiumWebBrowser();
 
-            //if (url != null) { chromiumWebBrowser.Load(url); }
-            //else { chromiumWebBrowser.Load("google.com"); }
-
-            //chromiumWebBrowser.FrameLoadEnd += browser_FrameLoadEnd;
-            //chromiumWebBrowser.AddressChanged += OnBrowserAddressChanged;
             chromiumWebBrowser.Dock = DockStyle.Fill;
 
             page.Text = $"Tab {TabNum}";
@@ -334,21 +330,21 @@ namespace ChromiumBrowser
             txtbox.Name = "MainSearch";
             txtbox.Text = "Search";
 
-            page.Controls.Add(chromiumWebBrowser);
-
             BrowserTabs.TabPages.Add(page);
+            
 
             txtbox.Click += (s, args) =>
             {
                 txtbox.Text = "";
             };
-            txtbox.TextChanged += (s, args) =>
+            txtbox.KeyDown += (s, e) =>
             {
-
-                string Pattern = @"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$";
-                Regex Rgx = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-                SearchAdress(chromiumBrowser);
+                page.Controls.Add(chromiumWebBrowser);
+                if (e.KeyCode == Keys.Enter)
+                {
+                    SearchAdress(chromiumWebBrowser, txtbox.Text);
+                    page.Controls.Remove(txtbox);
+                }
             };
             page.Controls.Add(txtbox);
 
@@ -396,7 +392,7 @@ namespace ChromiumBrowser
                     tabPage.Controls.Add(chromiumBrowser);
                 }
 
-                SearchAdress(chromiumBrowser);
+                SearchAdress(chromiumBrowser, Address.Text);
             }
         }
 
