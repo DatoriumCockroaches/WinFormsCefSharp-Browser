@@ -19,6 +19,7 @@ using System.Security.Cryptography;
 using System.Reflection.Emit;
 using CefSharp.DevTools.DOMSnapshot;
 using CefSharp.DevTools.Browser;
+using System.Reflection;
 
 namespace ChromiumBrowser
 {
@@ -31,6 +32,8 @@ namespace ChromiumBrowser
         List<string> visitedPages = new List<string>();
         int TabNum = 1;
 
+        string bgPath = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName((new System.Uri(Assembly.GetEntryAssembly().CodeBase)).AbsolutePath))), "\\Resources\\bg1.jpg");
+
         public Browser()
         {
             InitializeComponent();
@@ -40,6 +43,7 @@ namespace ChromiumBrowser
             this.Text = "Cockroach Browser";
             this.Icon = Resources.chromium;
             this.Update();
+            MessageBox.Show(bgPath);
         }
 
         public void InitializeBrowser()
