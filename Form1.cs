@@ -32,10 +32,15 @@ namespace ChromiumBrowser
         List<string> visitedPages = new List<string>();
         int TabNum = 1;
 
-        string bgPath = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName((new System.Uri(Assembly.GetEntryAssembly().CodeBase)).AbsolutePath))), "\\Resources\\bg1.jpg");
+        string mainDir = null;
+        string bgPath = null;
 
         public Browser()
         {
+            mainDir = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName((new System.Uri(Assembly.GetEntryAssembly().CodeBase)).AbsolutePath)));
+            bgPath = Path.Combine(mainDir, "\\Resources\\bg5.jfif");
+            MessageBox.Show(mainDir + bgPath);
+
             InitializeComponent();
             InitializeBrowser();
             panel.Width = 0;
@@ -43,7 +48,6 @@ namespace ChromiumBrowser
             this.Text = "Cockroach Browser";
             this.Icon = Resources.chromium;
             this.Update();
-            MessageBox.Show(bgPath);
         }
 
         public void InitializeBrowser()
@@ -73,18 +77,24 @@ namespace ChromiumBrowser
         private void btnBack_Click(object sender, EventArgs e)
         {
             chromiumBrowser = BrowserTabs.SelectedTab.Controls.OfType<ChromiumWebBrowser>().FirstOrDefault();
-            if (chromiumBrowser.CanGoBack)
+            if (chromiumBrowser != null)
             {
-                chromiumBrowser.Back();
+                if (chromiumBrowser.CanGoBack)
+                {
+                    chromiumBrowser.Back();
+                }
             }
         }
 
         private void btnForward_Click(object sender, EventArgs e)
         {
             chromiumBrowser = BrowserTabs.SelectedTab.Controls.OfType<ChromiumWebBrowser>().FirstOrDefault();
-            if (chromiumBrowser.CanGoForward)
+            if (chromiumBrowser != null)
             {
-                chromiumBrowser.Forward();
+                if (chromiumBrowser.CanGoForward)
+                {
+                    chromiumBrowser.Forward();
+                }
             }
         }
         private void SearchBarKeyDown(object sender, KeyEventArgs e)
@@ -325,6 +335,9 @@ namespace ChromiumBrowser
             ChromiumWebBrowser chromiumWebBrowser = new ChromiumWebBrowser();
 
             chromiumWebBrowser.Dock = DockStyle.Fill;
+
+            page.BackgroundImage = Image.FromFile(mainDir + bgPath);
+            page.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Tile;
 
             page.Text = $"Tab {TabNum}";
 
