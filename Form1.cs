@@ -19,6 +19,7 @@ using System.Security.Cryptography;
 using System.Reflection.Emit;
 using CefSharp.DevTools.DOMSnapshot;
 using CefSharp.DevTools.Browser;
+using System.Net;
 
 namespace ChromiumBrowser
 {
@@ -27,6 +28,7 @@ namespace ChromiumBrowser
     {
         ChromiumWebBrowser chromiumBrowser = null;
         List<ChromiumWebBrowser> chromiumBrowsers = new List<ChromiumWebBrowser>();
+        ImageList imgList = new ImageList();
       
         List<string> visitedPages = new List<string>();
         int TabNum = 1;
@@ -36,6 +38,9 @@ namespace ChromiumBrowser
             InitializeComponent();
             InitializeBrowser();
             panel.Width = 0;
+
+            BrowserTabs.ImageList = imgList;
+            BrowserTabs.ImageList.Images.Add(Properties.Resources.chromium);
 
             this.Text = "Cockroach Browser";
             this.Icon = Resources.chromium;
@@ -64,10 +69,6 @@ namespace ChromiumBrowser
                totalWidth += item.Width;
             }
             Address.Width = this.ClientSize.Width - totalWidth;
-            MessageBox.Show($"{ClientSize.Width} width, {totalWidth} total, {Address.Width} address");
-            MessageBox.Show($"{ClientSize.Width-totalWidth == Address.Width}");
-
-
         }
 
         private void btnBack_Click(object sender, EventArgs e)
@@ -324,7 +325,8 @@ namespace ChromiumBrowser
 
             BrowserTabs.TabPages.Add(page);
         }
-
+        WebClient webClient = new WebClient();
+        Uri iconUrl = new Uri("https://google.com");
         private void browser_FrameLoadEnd(object sender, FrameLoadEndEventArgs e)
         {
             if (e.Frame.IsMain)
@@ -336,8 +338,22 @@ namespace ChromiumBrowser
                 this.Invoke(new Action(() =>
                 {
                     BrowserTabs.SelectedTab.Text = domainName;
-                }));
 
+                    try
+                    {
+                        iconUrl = new Uri("https://"+new Uri(url).Host + "/favicon.ico");
+
+                        Icon img = new Icon(new System.IO.MemoryStream(new
+                        WebClient().DownloadData(iconUrl)));
+
+                        BrowserTabs.ImageList.Images.Add(img);
+                        BrowserTabs.SelectedTab.ImageIndex = BrowserTabs.ImageList.Images.Count - 1;
+                    }
+                    catch (Exception)
+                    {
+                        BrowserTabs.SelectedTab.ImageIndex = 0;
+                    }
+                }));
             }
         }
 
