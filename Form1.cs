@@ -39,7 +39,6 @@ namespace ChromiumBrowser
         {
             mainDir = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName((new System.Uri(Assembly.GetEntryAssembly().CodeBase)).AbsolutePath)));
             bgPath = Path.Combine(mainDir, "\\Resources\\bg5.jfif");
-            MessageBox.Show(mainDir + bgPath);
 
             InitializeComponent();
             InitializeBrowser();
@@ -68,8 +67,8 @@ namespace ChromiumBrowser
             totalWidth = 0;
             foreach (ToolStripItem item in ToolStrip.Items)
             {
-               if (item is ToolStripButton) { continue; }
-               totalWidth += item.Width;
+                if (item is ToolStripButton) { continue; }
+                totalWidth += item.Width;
             }
 
         }
@@ -337,18 +336,25 @@ namespace ChromiumBrowser
             chromiumWebBrowser.Dock = DockStyle.Fill;
 
             page.BackgroundImage = Image.FromFile(mainDir + bgPath);
-            page.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Tile;
+            page.BackgroundImageLayout = ImageLayout.Tile;
 
             page.Text = $"Tab {TabNum}";
 
             TabNum = TabNum+=1;
-
+            
             System.Windows.Forms.TextBox txtbox = new System.Windows.Forms.TextBox();
             txtbox.Name = "MainSearch";
             txtbox.Text = "Search";
 
             BrowserTabs.TabPages.Add(page);
-            
+
+            txtbox.Width = 50;
+            txtbox.Height = 30;
+            txtbox.Anchor = (AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top);
+            txtbox.AutoSize = false;
+            int x = (page.Size.Width - txtbox.Size.Width) / 2;
+            int y = (page.Size.Height - txtbox.Size.Height) / 2;
+            txtbox.Location = new Point(x, y);
 
             txtbox.Click += (s, args) =>
             {
