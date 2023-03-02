@@ -20,6 +20,7 @@ using System.Reflection.Emit;
 using CefSharp.DevTools.DOMSnapshot;
 using CefSharp.DevTools.Browser;
 using System.Net;
+using System.Runtime.InteropServices;
 
 namespace ChromiumBrowser
 {
@@ -29,7 +30,9 @@ namespace ChromiumBrowser
         ChromiumWebBrowser chromiumBrowser = null;
         List<ChromiumWebBrowser> chromiumBrowsers = new List<ChromiumWebBrowser>();
         ImageList imgList = new ImageList();
-      
+
+        TabPage PlusPage = null;
+
         List<string> visitedPages = new List<string>();
         int TabNum = 1;
 
@@ -41,6 +44,7 @@ namespace ChromiumBrowser
 
             BrowserTabs.ImageList = imgList;
             BrowserTabs.ImageList.Images.Add(Properties.Resources.chromium);
+            imgList.ImageSize = new Size(32, 32);
 
             this.Text = "Cockroach Browser";
             this.Icon = Resources.chromium;
@@ -53,6 +57,19 @@ namespace ChromiumBrowser
             Cef.Initialize(settings);
 
             CreateNewTab("google.com");
+
+            PlusPage = new TabPage();
+            PlusPage.Text = "+";
+            BrowserTabs.Controls.Add(PlusPage);
+            BrowserTabs.Click += BrowserTabs_Click;
+        }
+
+        private void BrowserTabs_Click(object sender, EventArgs e)
+        {
+            if (BrowserTabs.SelectedTab == PlusPage)
+            {
+                CreateNewTab("google.com");
+            }
         }
 
         private void OnBrowserAddressChanged(object sender, AddressChangedEventArgs e)
@@ -200,6 +217,7 @@ namespace ChromiumBrowser
         private void historyBtn_Click(object sender, EventArgs e)
         {
             TabPage page = new TabPage();
+            BrowserTabs.SelectedTab = page;
             page.Text = "History";
 
             ChromiumWebBrowser browser = new ChromiumWebBrowser();
@@ -307,9 +325,10 @@ namespace ChromiumBrowser
         private void CreateNewTab(string url)
         {
             page = new TabPage();
+            BrowserTabs.SelectedTab = page;
 
             ChromiumWebBrowser chromiumWebBrowser = new ChromiumWebBrowser();
-
+            
             if (url != null) { chromiumWebBrowser.Load(url); }
             else { chromiumWebBrowser.Load("google.com"); }
 
@@ -323,9 +342,19 @@ namespace ChromiumBrowser
 
             page.Controls.Add(chromiumWebBrowser);
 
-            BrowserTabs.TabPages.Add(page);
+
+            int pos = 0;
+
+            if (BrowserTabs.TabCount > 1) {
+                pos = BrowserTabs.TabCount - 1;
+            }
+            
+            BrowserTabs.TabPages.Insert(pos, page);
         }
-        WebClient webClient = new WebClient();
+
+        WebClient client = new WebClient();
+        Stream stream;
+        
         Uri iconUrl = new Uri("https://google.com");
         private void browser_FrameLoadEnd(object sender, FrameLoadEndEventArgs e)
         {
@@ -341,12 +370,12 @@ namespace ChromiumBrowser
 
                     try
                     {
-                        iconUrl = new Uri("https://"+new Uri(url).Host + "/favicon.ico");
+                        iconUrl = new Uri("https://" + new Uri(url).Host + "/favicon.ico");
 
-                        Icon img = new Icon(new System.IO.MemoryStream(new
-                        WebClient().DownloadData(iconUrl)));
+                        stream = client.OpenRead(iconUrl);
+                        Bitmap bmp = new Bitmap(stream);
 
-                        BrowserTabs.ImageList.Images.Add(img);
+                        BrowserTabs.ImageList.Images.Add(bmp);
                         BrowserTabs.SelectedTab.ImageIndex = BrowserTabs.ImageList.Images.Count - 1;
                     }
                     catch (Exception)
@@ -359,8 +388,6 @@ namespace ChromiumBrowser
 
         private string GetDomainName(string url)
         {
-            //Uri uri = new Uri(url);
-            //string host = uri.Host;
             bool page_safe = url.Contains("https:");
             bool page_unsafe = url.Contains("http:");
             string domain_name = null;

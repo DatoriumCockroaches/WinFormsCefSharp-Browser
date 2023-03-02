@@ -180,6 +180,7 @@
             // BrowserTabs
             // 
             this.BrowserTabs.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
+            this.BrowserTabs.AllowDrop = true;
             this.BrowserTabs.Dock = System.Windows.Forms.DockStyle.Fill;
             this.BrowserTabs.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F);
             this.BrowserTabs.Location = new System.Drawing.Point(0, 55);
