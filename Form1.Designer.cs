@@ -188,6 +188,8 @@
             this.BrowserTabs.SelectedIndex = 0;
             this.BrowserTabs.Size = new System.Drawing.Size(800, 694);
             this.BrowserTabs.TabIndex = 2;
+            this.BrowserTabs.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TabControl_MouseDown);
+            this.BrowserTabs.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TabControl_MouseUp);
             // 
             // panel
             // 

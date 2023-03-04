@@ -21,6 +21,7 @@ using CefSharp.DevTools.DOMSnapshot;
 using CefSharp.DevTools.Browser;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace ChromiumBrowser
 {
@@ -31,7 +32,7 @@ namespace ChromiumBrowser
         List<ChromiumWebBrowser> chromiumBrowsers = new List<ChromiumWebBrowser>();
         ImageList imgList = new ImageList();
 
-        TabPage PlusPage = null;
+        TabPage PlusPage = new TabPage();
 
         List<string> visitedPages = new List<string>();
         int TabNum = 1;
@@ -48,7 +49,7 @@ namespace ChromiumBrowser
 
             this.Text = "Cockroach Browser";
             this.Icon = Resources.chromium;
-            this.Update();
+            //this.Update();
         }
 
         public void InitializeBrowser()
@@ -57,8 +58,6 @@ namespace ChromiumBrowser
             Cef.Initialize(settings);
 
             CreateNewTab("google.com");
-
-            PlusPage = new TabPage();
             PlusPage.Text = "+";
             BrowserTabs.Controls.Add(PlusPage);
             BrowserTabs.Click += BrowserTabs_Click;
@@ -82,8 +81,8 @@ namespace ChromiumBrowser
             totalWidth = 0;
             foreach (ToolStripItem item in ToolStrip.Items)
             {
-               if (item is ToolStripButton) { continue; }
-               totalWidth += item.Width;
+                if (item is ToolStripButton) { continue; }
+                totalWidth += item.Width;
             }
             Address.Width = this.ClientSize.Width - totalWidth;
         }
@@ -133,12 +132,13 @@ namespace ChromiumBrowser
                     tabPage.Controls.Add(chromiumBrowser);
                 }
 
-                SearchAdress(chromiumBrowser);            }
+                SearchAdress(chromiumBrowser);
+            }
         }
 
         private void SearchAdress(ChromiumWebBrowser browser)
         {
-            if (Address.Text == null) { return; } 
+            if (Address.Text == null) { return; }
 
             string Pattern = @"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$";
             Regex Rgx = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -184,8 +184,8 @@ namespace ChromiumBrowser
             if (containsInstanceOfChromium)
             {
                 chromiumBrowser.Reload();
-            } 
-            else if(page.Text == "History")
+            }
+            else if (page.Text == "History")
             {
                 while (page.Controls.Count > 0)
                 {
@@ -211,7 +211,7 @@ namespace ChromiumBrowser
         }
 
         int labelY;
- 
+
         System.Windows.Forms.Button removeAll;
         System.Windows.Forms.Button removeSelected;
         private void historyBtn_Click(object sender, EventArgs e)
@@ -224,7 +224,8 @@ namespace ChromiumBrowser
             browser.Dock = DockStyle.Fill;
 
             labelY = 5;
-            BrowserTabs.TabPages.Add(page);
+            int pos = BrowserTabs.TabCount - 1;
+            BrowserTabs.TabPages.Insert(pos, page);
 
             removeAll = new System.Windows.Forms.Button();
             removeAll.AutoSize = true;
@@ -259,7 +260,7 @@ namespace ChromiumBrowser
             labelY = GenerateHistory(labelY, page);
 
             removeAll.Location = new Point(10, labelY);
-            removeSelected.Location = new Point(10, labelY+35);
+            removeSelected.Location = new Point(10, labelY + 35);
 
             BrowserTabs.TabPages[BrowserTabs.TabPages.IndexOf(page)].Controls.Add(removeAll);
             BrowserTabs.TabPages[BrowserTabs.TabPages.IndexOf(page)].Controls.Add(removeSelected);
@@ -302,7 +303,7 @@ namespace ChromiumBrowser
                     else
                     {
                         controlsToRemove.Remove(btn);
-                        controlsToRemove.Remove(urlLabel); 
+                        controlsToRemove.Remove(urlLabel);
                         visitedPages.Add(urlLabel.Text);
                     }
                 };
@@ -316,7 +317,7 @@ namespace ChromiumBrowser
             BrowserTabs.TabPages[BrowserTabs.TabPages.IndexOf(page)].Controls.Add(removeAll);
             BrowserTabs.TabPages[BrowserTabs.TabPages.IndexOf(page)].Controls.Add(removeSelected);
 
-            removeSelected.Location = new Point(10, labelY+35);
+            removeSelected.Location = new Point(10, labelY + 35);
             removeAll.Location = new Point(10, labelY);
             return labelY;
         }
@@ -328,7 +329,7 @@ namespace ChromiumBrowser
             BrowserTabs.SelectedTab = page;
 
             ChromiumWebBrowser chromiumWebBrowser = new ChromiumWebBrowser();
-            
+
             if (url != null) { chromiumWebBrowser.Load(url); }
             else { chromiumWebBrowser.Load("google.com"); }
 
@@ -338,23 +339,29 @@ namespace ChromiumBrowser
 
             page.Text = $"Tab {TabNum}";
 
-            TabNum = TabNum+=1;
+            TabNum = TabNum += 1;
 
             page.Controls.Add(chromiumWebBrowser);
 
+            int pos = BrowserTabs.TabCount > 0 ? BrowserTabs.TabCount - 1 : 0;
 
-            int pos = 0;
+            if (pos > 0) { BrowserTabs.TabPages.Insert(pos, page); } else { BrowserTabs.TabPages.Add(page); }
+        }
 
-            if (BrowserTabs.TabCount > 1) {
-                pos = BrowserTabs.TabCount - 1;
-            }
-            
-            BrowserTabs.TabPages.Insert(pos, page);
+        private void CloseButton_Click(object sender, EventArgs e)
+        {
+            System.Windows.Forms.Button closeButton = (System.Windows.Forms.Button)sender;
+            TabPage tabPage = (TabPage)closeButton.Parent;
+            ChromiumWebBrowser chromiumBrowser = tabPage.Controls.OfType<ChromiumWebBrowser>().FirstOrDefault();
+
+            chromiumBrowsers.Remove(chromiumBrowser);
+            chromiumBrowser.Dispose();
+            tabPage.Dispose();
         }
 
         WebClient client = new WebClient();
         Stream stream;
-        
+
         Uri iconUrl = new Uri("https://google.com");
         private void browser_FrameLoadEnd(object sender, FrameLoadEndEventArgs e)
         {
@@ -362,6 +369,7 @@ namespace ChromiumBrowser
             {
                 ChromiumWebBrowser browser = (ChromiumWebBrowser)sender;
                 string url = browser.Address;
+
                 string domainName = GetDomainName(url);
 
                 this.Invoke(new Action(() =>
@@ -428,7 +436,7 @@ namespace ChromiumBrowser
 
         private void Address_Click(object sender, EventArgs e)
         {
-           Address.Text = "";
+            Address.Text = "";
         }
 
         byte redVal, greenVal, blueVal;
@@ -442,6 +450,48 @@ namespace ChromiumBrowser
         {
             greenVal = (byte)greenUpDown.Value;
             changeControlColors();
+        }
+
+        private void TabControl_SelectIndexChanged(object sender, EventArgs e)
+        {
+            if (BrowserTabs.SelectedIndex == BrowserTabs.TabPages.Count - 1)
+                CreateNewTab("google.com");
+        }
+
+        TabPage GetPageByPoint(TabControl tabControl, Point point)
+        {
+            for (int i = 0; i < tabControl.TabPages.Count; i++)
+            {
+                TabPage page = tabControl.TabPages[i];
+                if (tabControl.GetTabRect(i).Contains(point))
+                    return page;
+            }
+            return null;
+        }
+
+        TabPage selectedPage, swappedPage;
+        private void TabControl_MouseDown(object sender, MouseEventArgs e)
+        {
+            selectedPage = GetPageByPoint(BrowserTabs, e.Location);
+            BrowserTabs.SelectedTab = selectedPage;
+        }
+
+        int startPos = 0;
+        private void TabControl_MouseUp(object sender, MouseEventArgs e)
+        {
+            startPos = BrowserTabs.TabPages.IndexOf(selectedPage);
+
+            swappedPage = GetPageByPoint(BrowserTabs, e.Location);
+            if (startPos == BrowserTabs.TabPages.IndexOf(swappedPage) || selectedPage == PlusPage) { return; }
+            if (swappedPage != null)
+            {
+                BrowserTabs.TabPages.Remove(selectedPage);
+                BrowserTabs.TabPages.Insert(BrowserTabs.TabPages.IndexOf(swappedPage), selectedPage);
+            }
+            else
+            {
+                selectedPage = null;
+            }
         }
 
         private void blueUpDown_ValueChanged(object sender, EventArgs e)

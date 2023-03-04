@@ -173,4 +173,8 @@
     <Error Condition="!Exists('packages\CefSharp.Common.110.0.280\build\CefSharp.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\CefSharp.Common.110.0.280\build\CefSharp.Common.targets'))" />
   </Target>
   <Import Project="packages\CefSharp.Common.110.0.280\build\CefSharp.Common.targets" Condition="Exists('packages\CefSharp.Common.110.0.280\build\CefSharp.Common.targets')" />
+  <PropertyGroup>
+    <PreBuildEvent>if exist "$(TargetPath).locked" del "$(TargetPath).locked"
+if exist "$(TargetPath)" if not exist "$(TargetPath).locked" move "$(TargetPath)" "$(TargetPath).locked"</PreBuildEvent>
+  </PropertyGroup>
 </Project>
