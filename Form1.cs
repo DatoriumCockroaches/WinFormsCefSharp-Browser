@@ -57,6 +57,9 @@ namespace ChromiumBrowser
             var settings = new CefSettings();
             Cef.Initialize(settings);
 
+            BrowserTabs.SizeMode = TabSizeMode.Fixed;
+            BrowserTabs.ItemSize = new Size(120, 30);
+
             CreateNewTab("google.com");
             PlusPage.Text = "+";
             BrowserTabs.Controls.Add(PlusPage);
@@ -472,11 +475,58 @@ namespace ChromiumBrowser
         TabPage selectedPage, swappedPage;
         private void TabControl_MouseDown(object sender, MouseEventArgs e)
         {
+            //handle dragging
             selectedPage = GetPageByPoint(BrowserTabs, e.Location);
             BrowserTabs.SelectedTab = selectedPage;
+
+
+            //Handle tab close button
+            for (int i = 0; i < BrowserTabs.TabPages.Count; i++)
+            {
+                Rectangle r = BrowserTabs.GetTabRect(i);
+                //Getting the position of the "x" mark.
+                Rectangle closeButton = new Rectangle(r.Right - 25, r.Top / 2, 50, 15);
+                if (closeButton.Contains(e.Location))
+                {
+                    BrowserTabs.TabPages.RemoveAt(i);
+                    //MessageBox.Show("r");
+                    break;
+                }
+            }
         }
 
         int startPos = 0;
+
+        private void TabControl_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            if (e.Index >= 0)
+            {
+                // Set up the image bounds and size
+                Rectangle imageBounds = new Rectangle(e.Bounds.X + 2, e.Bounds.Y + 2, 16, 16);
+
+                // Draw the image for all tabs except the last one
+                if (e.Index < this.BrowserTabs.TabCount - 1)
+                {
+                    e.Graphics.DrawImage(Resources.searchIcon, imageBounds);
+                }
+
+                // Set up the text bounds
+                Rectangle textBounds = new Rectangle(e.Bounds.X + 20, e.Bounds.Y, e.Bounds.Width - 20, e.Bounds.Height);
+
+                // Draw the tab text
+                e.Graphics.DrawString(this.BrowserTabs.TabPages[e.Index].Text, e.Font, Brushes.Black, textBounds);
+
+                // Draw the "x" for all tabs except the last one
+                if (e.Index < this.BrowserTabs.TabCount - 1)
+                {
+                    Rectangle xBounds = new Rectangle(e.Bounds.Right - 18, e.Bounds.Y + 4, 12, e.Bounds.Height - 8);
+                    e.Graphics.DrawString("x", e.Font, Brushes.Black, xBounds);
+                }
+
+                e.DrawFocusRectangle();
+            }
+        }
+
         private void TabControl_MouseUp(object sender, MouseEventArgs e)
         {
             startPos = BrowserTabs.TabPages.IndexOf(selectedPage);
