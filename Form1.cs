@@ -44,12 +44,12 @@ namespace ChromiumBrowser
             panel.Width = 0;
 
             BrowserTabs.ImageList = imgList;
-            BrowserTabs.ImageList.Images.Add(Properties.Resources.chromium);
+            imgList.Images.Add(Properties.Resources.settings);
             imgList.ImageSize = new Size(32, 32);
 
             this.Text = "Cockroach Browser";
             this.Icon = Resources.chromium;
-            //this.Update();
+            this.Update();
         }
 
         public void InitializeBrowser()
@@ -58,7 +58,7 @@ namespace ChromiumBrowser
             Cef.Initialize(settings);
 
             BrowserTabs.SizeMode = TabSizeMode.Fixed;
-            BrowserTabs.ItemSize = new Size(120, 30);
+            BrowserTabs.ItemSize = new Size(160, 30);
 
             CreateNewTab("google.com");
             PlusPage.Text = "+";
@@ -240,10 +240,10 @@ namespace ChromiumBrowser
 
             removeAll.Click += (s, args) =>
             {
-                while (page.Controls.Count > 0)
+                foreach (var control in page.Controls.OfType<System.Windows.Forms.Label>())
                 {
-                    Control control = page.Controls[0];
                     page.Controls.Remove(control);
+                    control.Dispose();
                 }
                 visitedPages.Clear();
             };
@@ -366,6 +366,7 @@ namespace ChromiumBrowser
         Stream stream;
 
         Uri iconUrl = new Uri("https://google.com");
+        Dictionary<TabPage, int> tabImageIndex = new Dictionary<TabPage, int>();
         private void browser_FrameLoadEnd(object sender, FrameLoadEndEventArgs e)
         {
             if (e.Frame.IsMain)
@@ -387,10 +388,15 @@ namespace ChromiumBrowser
                         Bitmap bmp = new Bitmap(stream);
 
                         BrowserTabs.ImageList.Images.Add(bmp);
+                        int imageIndex = BrowserTabs.ImageList.Images.Count-1;
                         BrowserTabs.SelectedTab.ImageIndex = BrowserTabs.ImageList.Images.Count - 1;
+                        tabImageIndex[BrowserTabs.SelectedTab] = imageIndex;
+
+                        BrowserTabs.Invalidate();
                     }
                     catch (Exception)
                     {
+                        tabImageIndex[BrowserTabs.SelectedTab] = 0;
                         BrowserTabs.SelectedTab.ImageIndex = 0;
                     }
                 }));
@@ -455,10 +461,12 @@ namespace ChromiumBrowser
             changeControlColors();
         }
 
-        private void TabControl_SelectIndexChanged(object sender, EventArgs e)
+        private void BrowserTabs_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (BrowserTabs.SelectedIndex == BrowserTabs.TabPages.Count - 1)
+            {
                 CreateNewTab("google.com");
+            }
         }
 
         TabPage GetPageByPoint(TabControl tabControl, Point point)
@@ -472,75 +480,121 @@ namespace ChromiumBrowser
             return null;
         }
 
-        TabPage selectedPage, swappedPage;
+        private bool isOverCloseButton = false;
+        TabPage selectedPage;
+
         private void TabControl_MouseDown(object sender, MouseEventArgs e)
         {
-            //handle dragging
-            selectedPage = GetPageByPoint(BrowserTabs, e.Location);
-            BrowserTabs.SelectedTab = selectedPage;
-
-
-            //Handle tab close button
+            // Check if the mouse is over the close button rectangle
             for (int i = 0; i < BrowserTabs.TabPages.Count; i++)
             {
                 Rectangle r = BrowserTabs.GetTabRect(i);
-                //Getting the position of the "x" mark.
-                Rectangle closeButton = new Rectangle(r.Right - 25, r.Top / 2, 50, 15);
+                // Getting the position of the "x" mark.
+                Rectangle closeButton = new Rectangle(r.Right - 30, r.Top / 2, 30, 15);
                 if (closeButton.Contains(e.Location))
                 {
-                    BrowserTabs.TabPages.RemoveAt(i);
-                    //MessageBox.Show("r");
-                    break;
+                    isOverCloseButton = true;
+                    return;
+                }
+            }
+
+            // If the mouse is not over the close button, handle tab dragging
+            isOverCloseButton = false;
+            selectedPage = GetPageByPoint(BrowserTabs, e.Location);
+            if (e.Button == MouseButtons.Left && selectedPage != null && selectedPage != PlusPage)
+            {
+                BrowserTabs.DoDragDrop(selectedPage, DragDropEffects.All);
+            }
+        }
+
+        private void TabControl_MouseUp(object sender, MouseEventArgs e)
+        {
+            // If the mouse is over the close button, close the tab and return
+            if (isOverCloseButton)
+            {
+                for (int i = 0; i < BrowserTabs.TabPages.Count; i++)
+                {
+                    Rectangle r = BrowserTabs.GetTabRect(i);
+                    // Getting the position of the "x" mark.
+                    Rectangle closeButton = new Rectangle(r.Right - 30, r.Top / 2, 30, 15);
+                    if (closeButton.Contains(e.Location))
+                    {
+                        BrowserTabs.TabPages.RemoveAt(i);
+                        selectedPage = null;
+                        if (BrowserTabs.TabCount == 1) { this.Close(); }
+                        return;
+                    }
+                }
+            }
+
+            // If the mouse is not over the close button, handle tab dragging
+            if (selectedPage != null && selectedPage != PlusPage)
+            {
+                TabPage swappedPage = GetPageByPoint(BrowserTabs, e.Location);
+                if (swappedPage != null && swappedPage != selectedPage)
+                {
+                    BrowserTabs.TabPages.Remove(selectedPage);
+                    BrowserTabs.TabPages.Insert(BrowserTabs.TabPages.IndexOf(swappedPage), selectedPage);
+                    BrowserTabs.SelectedTab = selectedPage;
+                }
+                else
+                {
+                    selectedPage = null;
                 }
             }
         }
 
-        int startPos = 0;
+
 
         private void TabControl_DrawItem(object sender, DrawItemEventArgs e)
         {
-            if (e.Index >= 0)
+            if (e.Index >= 0 && e.Index < BrowserTabs.TabCount)
             {
                 // Set up the image bounds and size
-                Rectangle imageBounds = new Rectangle(e.Bounds.X + 2, e.Bounds.Y + 2, 16, 16);
+                Rectangle imageBounds = new Rectangle(e.Bounds.Left, e.Bounds.Top, 25, 25);
 
                 // Draw the image for all tabs except the last one
-                if (e.Index < this.BrowserTabs.TabCount - 1)
+                try
                 {
-                    e.Graphics.DrawImage(Resources.searchIcon, imageBounds);
+                    if (e.Index < BrowserTabs.TabCount - 1)
+                    {
+                        // Draw the image for the tab, if there is one
+                        if (tabImageIndex.TryGetValue(BrowserTabs.TabPages[e.Index], out int imageIndex))
+                        {
+                            e.Graphics.DrawImage(BrowserTabs.ImageList.Images[imageIndex], imageBounds);
+                        }
+                    }
+                } 
+                catch (Exception)
+                {
+                    BrowserTabs.ImageList.Images.Add(Resources.chromium);
                 }
 
                 // Set up the text bounds
                 Rectangle textBounds = new Rectangle(e.Bounds.X + 20, e.Bounds.Y, e.Bounds.Width - 20, e.Bounds.Height);
 
                 // Draw the tab text
-                e.Graphics.DrawString(this.BrowserTabs.TabPages[e.Index].Text, e.Font, Brushes.Black, textBounds);
+                try
+                {
+                    e.Graphics.DrawString(BrowserTabs.TabPages[e.Index].Text, e.Font, Brushes.Black, textBounds);
+                }
+                catch (Exception)
+                {
+                    e.Graphics.DrawString($"Tab {TabNum}", e.Font, Brushes.Black, textBounds);
+                }
 
-                // Draw the "x" for all tabs except the last one
                 if (e.Index < this.BrowserTabs.TabCount - 1)
                 {
-                    Rectangle xBounds = new Rectangle(e.Bounds.Right - 18, e.Bounds.Y + 4, 12, e.Bounds.Height - 8);
+                    // Draw the rectangle behind the X
+                    Rectangle rect = new Rectangle(e.Bounds.Right - 30, e.Bounds.Y/2, 30, 30);
+                    e.Graphics.FillRectangle(SystemBrushes.Control, rect);
+
+                    // Draw the X
+                    Rectangle xBounds = new Rectangle(e.Bounds.Right - 30, e.Bounds.Y / 2, 30, e.Bounds.Height);
                     e.Graphics.DrawString("x", e.Font, Brushes.Black, xBounds);
                 }
 
                 e.DrawFocusRectangle();
-            }
-        }
-
-        private void TabControl_MouseUp(object sender, MouseEventArgs e)
-        {
-            startPos = BrowserTabs.TabPages.IndexOf(selectedPage);
-
-            swappedPage = GetPageByPoint(BrowserTabs, e.Location);
-            if (startPos == BrowserTabs.TabPages.IndexOf(swappedPage) || selectedPage == PlusPage) { return; }
-            if (swappedPage != null)
-            {
-                BrowserTabs.TabPages.Remove(selectedPage);
-                BrowserTabs.TabPages.Insert(BrowserTabs.TabPages.IndexOf(swappedPage), selectedPage);
-            }
-            else
-            {
-                selectedPage = null;
             }
         }
 
