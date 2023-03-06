@@ -35,14 +35,11 @@
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.Address = new System.Windows.Forms.ToolStripTextBox();
-            this.AddBrowserTab = new System.Windows.Forms.ToolStripButton();
-            this.removeBrowserTab = new System.Windows.Forms.ToolStripButton();
             this.settingsBtn = new System.Windows.Forms.ToolStripButton();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.BrowserTabs = new System.Windows.Forms.TabControl();
             this.panel = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
-            this.advancedSettings = new System.Windows.Forms.Button();
             this.historyBtn = new System.Windows.Forms.Button();
             this.blueUpDown = new System.Windows.Forms.NumericUpDown();
             this.greenUpDown = new System.Windows.Forms.NumericUpDown();
@@ -67,13 +64,11 @@
             this.toolStripButton2,
             this.toolStripButton1,
             this.Address,
-            this.AddBrowserTab,
-            this.removeBrowserTab,
             this.settingsBtn});
             this.ToolStrip.Location = new System.Drawing.Point(0, 0);
             this.ToolStrip.Name = "ToolStrip";
             this.ToolStrip.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
-            this.ToolStrip.Size = new System.Drawing.Size(800, 55);
+            this.ToolStrip.Size = new System.Drawing.Size(800, 50);
             this.ToolStrip.TabIndex = 1;
             this.ToolStrip.Text = "toolStrip1";
             // 
@@ -130,32 +125,6 @@
             this.Address.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SearchBarKeyDown);
             this.Address.Click += new System.EventHandler(this.Address_Click);
             // 
-            // AddBrowserTab
-            // 
-            this.AddBrowserTab.AutoSize = false;
-            this.AddBrowserTab.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.AddBrowserTab.Font = new System.Drawing.Font("Segoe UI", 17F);
-            this.AddBrowserTab.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.AddBrowserTab.Image = ((System.Drawing.Image)(resources.GetObject("AddBrowserTab.Image")));
-            this.AddBrowserTab.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.AddBrowserTab.Name = "AddBrowserTab";
-            this.AddBrowserTab.Size = new System.Drawing.Size(40, 45);
-            this.AddBrowserTab.Text = "+";
-            this.AddBrowserTab.Click += new System.EventHandler(this.AddBrowserTab_Click);
-            // 
-            // removeBrowserTab
-            // 
-            this.removeBrowserTab.AutoSize = false;
-            this.removeBrowserTab.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.removeBrowserTab.Font = new System.Drawing.Font("Segoe UI", 17F);
-            this.removeBrowserTab.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.removeBrowserTab.Image = ((System.Drawing.Image)(resources.GetObject("removeBrowserTab.Image")));
-            this.removeBrowserTab.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.removeBrowserTab.Name = "removeBrowserTab";
-            this.removeBrowserTab.Size = new System.Drawing.Size(40, 50);
-            this.removeBrowserTab.Text = "-";
-            this.removeBrowserTab.Click += new System.EventHandler(this.removeBrowserTab_Click);
-            // 
             // settingsBtn
             // 
             this.settingsBtn.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
@@ -184,10 +153,10 @@
             this.BrowserTabs.Dock = System.Windows.Forms.DockStyle.Fill;
             this.BrowserTabs.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.BrowserTabs.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F);
-            this.BrowserTabs.Location = new System.Drawing.Point(0, 55);
+            this.BrowserTabs.Location = new System.Drawing.Point(0, 50);
             this.BrowserTabs.Name = "BrowserTabs";
             this.BrowserTabs.SelectedIndex = 0;
-            this.BrowserTabs.Size = new System.Drawing.Size(800, 694);
+            this.BrowserTabs.Size = new System.Drawing.Size(800, 1413);
             this.BrowserTabs.TabIndex = 2;
             this.BrowserTabs.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.TabControl_DrawItem);
             this.BrowserTabs.SelectedIndexChanged += new System.EventHandler(this.BrowserTabs_SelectedIndexChanged);
@@ -197,7 +166,6 @@
             // panel
             // 
             this.panel.Controls.Add(this.button1);
-            this.panel.Controls.Add(this.advancedSettings);
             this.panel.Controls.Add(this.historyBtn);
             this.panel.Controls.Add(this.blueUpDown);
             this.panel.Controls.Add(this.greenUpDown);
@@ -205,16 +173,16 @@
             this.panel.Controls.Add(this.label1);
             this.panel.Controls.Add(this.colorBox);
             this.panel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel.Location = new System.Drawing.Point(400, 55);
+            this.panel.Location = new System.Drawing.Point(400, 50);
             this.panel.MaximumSize = new System.Drawing.Size(400, 0);
             this.panel.Name = "panel";
-            this.panel.Size = new System.Drawing.Size(400, 694);
+            this.panel.Size = new System.Drawing.Size(400, 1413);
             this.panel.TabIndex = 3;
             // 
             // button1
             // 
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.button1.Location = new System.Drawing.Point(10, 369);
+            this.button1.Location = new System.Drawing.Point(10, 368);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(378, 65);
             this.button1.TabIndex = 7;
@@ -222,19 +190,9 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // advancedSettings
-            // 
-            this.advancedSettings.Location = new System.Drawing.Point(10, 440);
-            this.advancedSettings.Name = "advancedSettings";
-            this.advancedSettings.Size = new System.Drawing.Size(380, 54);
-            this.advancedSettings.TabIndex = 6;
-            this.advancedSettings.Text = "Advanced settings";
-            this.advancedSettings.UseVisualStyleBackColor = true;
-            this.advancedSettings.Click += new System.EventHandler(this.advancedSettings_Click);
-            // 
             // historyBtn
             // 
-            this.historyBtn.Location = new System.Drawing.Point(10, 322);
+            this.historyBtn.Location = new System.Drawing.Point(10, 321);
             this.historyBtn.Name = "historyBtn";
             this.historyBtn.Size = new System.Drawing.Size(378, 43);
             this.historyBtn.TabIndex = 5;
@@ -307,7 +265,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 749);
+            this.ClientSize = new System.Drawing.Size(800, 1463);
             this.Controls.Add(this.panel);
             this.Controls.Add(this.BrowserTabs);
             this.Controls.Add(this.ToolStrip);
@@ -331,9 +289,7 @@
         private System.Windows.Forms.ToolStrip ToolStrip;
         private System.Windows.Forms.ToolStripTextBox Address;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.ToolStripButton AddBrowserTab;
         private System.Windows.Forms.TabControl BrowserTabs;
-        private System.Windows.Forms.ToolStripButton removeBrowserTab;
         private System.Windows.Forms.Panel panel;
         private System.Windows.Forms.PictureBox colorBox;
         private System.Windows.Forms.Label label1;
@@ -342,7 +298,6 @@
         private System.Windows.Forms.NumericUpDown redUpDown;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.Button historyBtn;
-        private System.Windows.Forms.Button advancedSettings;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ToolStripButton settingsBtn;
         private System.Windows.Forms.ToolStripButton toolStripButton3;

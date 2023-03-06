@@ -22,6 +22,8 @@ using CefSharp.DevTools.Browser;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using System.Windows.Input;
+using System.Runtime.CompilerServices;
 
 namespace ChromiumBrowser
 {
@@ -50,6 +52,8 @@ namespace ChromiumBrowser
             this.Text = "Cockroach Browser";
             this.Icon = Resources.chromium;
             this.Update();
+            this.KeyPreview = true;
+            this.Focus();
         }
 
         public void InitializeBrowser()
@@ -58,7 +62,7 @@ namespace ChromiumBrowser
             Cef.Initialize(settings);
 
             BrowserTabs.SizeMode = TabSizeMode.Fixed;
-            BrowserTabs.ItemSize = new Size(160, 30);
+            BrowserTabs.ItemSize = new Size(200, 30);
 
             CreateNewTab("google.com");
             PlusPage.Text = "+";
@@ -107,7 +111,7 @@ namespace ChromiumBrowser
                 chromiumBrowser.Forward();
             }
         }
-        private void SearchBarKeyDown(object sender, KeyEventArgs e)
+        private void SearchBarKeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
@@ -154,27 +158,6 @@ namespace ChromiumBrowser
             else
             {
                 browser.Load("https://www.google.com/search?q=" + Address.Text.Replace(" ", "+"));
-            }
-        }
-
-        private void AddBrowserTab_Click(object sender, EventArgs e)
-        {
-            CreateNewTab("google.com");
-        }
-
-        private void removeBrowserTab_Click(object sender, EventArgs e)
-        {
-            TabNum -= 1;
-            if (BrowserTabs.SelectedTab != null)
-            {
-                if (BrowserTabs.TabCount == 1)
-                {
-                    this.Close();
-                }
-                else
-                {
-                    BrowserTabs.TabPages.Remove(BrowserTabs.SelectedTab);
-                }
             }
         }
 
@@ -287,7 +270,7 @@ namespace ChromiumBrowser
                 urlLabel.AutoSize = true;
                 urlLabel.Location = new Point(30, labelY);
                 urlLabel.ForeColor = Color.Blue;
-                urlLabel.Cursor = Cursors.Hand;
+                urlLabel.Cursor = System.Windows.Forms.Cursors.Hand;
 
                 btn.Location = new Point(10, labelY);
 
@@ -349,17 +332,7 @@ namespace ChromiumBrowser
             int pos = BrowserTabs.TabCount > 0 ? BrowserTabs.TabCount - 1 : 0;
 
             if (pos > 0) { BrowserTabs.TabPages.Insert(pos, page); } else { BrowserTabs.TabPages.Add(page); }
-        }
-
-        private void CloseButton_Click(object sender, EventArgs e)
-        {
-            System.Windows.Forms.Button closeButton = (System.Windows.Forms.Button)sender;
-            TabPage tabPage = (TabPage)closeButton.Parent;
-            ChromiumWebBrowser chromiumBrowser = tabPage.Controls.OfType<ChromiumWebBrowser>().FirstOrDefault();
-
-            chromiumBrowsers.Remove(chromiumBrowser);
-            chromiumBrowser.Dispose();
-            tabPage.Dispose();
+            chromiumWebBrowser.Focus();
         }
 
         WebClient client = new WebClient();
@@ -438,27 +411,9 @@ namespace ChromiumBrowser
             }
         }
 
-        private void advancedSettings_Click(object sender, EventArgs e)
-        {
-            //TODO add something here
-        }
-
         private void Address_Click(object sender, EventArgs e)
         {
             Address.Text = "";
-        }
-
-        byte redVal, greenVal, blueVal;
-        private void redUpDown_ValueChanged(object sender, EventArgs e)
-        {
-            redVal = (byte)redUpDown.Value;
-            changeControlColors();
-        }
-
-        private void greenUpDown_ValueChanged(object sender, EventArgs e)
-        {
-            greenVal = (byte)greenUpDown.Value;
-            changeControlColors();
         }
 
         private void BrowserTabs_SelectedIndexChanged(object sender, EventArgs e)
@@ -483,13 +438,11 @@ namespace ChromiumBrowser
         private bool isOverCloseButton = false;
         TabPage selectedPage;
 
-        private void TabControl_MouseDown(object sender, MouseEventArgs e)
+        private void TabControl_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            // Check if the mouse is over the close button rectangle
             for (int i = 0; i < BrowserTabs.TabPages.Count; i++)
             {
                 Rectangle r = BrowserTabs.GetTabRect(i);
-                // Getting the position of the "x" mark.
                 Rectangle closeButton = new Rectangle(r.Right - 30, r.Top / 2, 30, 15);
                 if (closeButton.Contains(e.Location))
                 {
@@ -501,33 +454,27 @@ namespace ChromiumBrowser
             // If the mouse is not over the close button, handle tab dragging
             isOverCloseButton = false;
             selectedPage = GetPageByPoint(BrowserTabs, e.Location);
-            if (e.Button == MouseButtons.Left && selectedPage != null && selectedPage != PlusPage)
-            {
-                BrowserTabs.DoDragDrop(selectedPage, DragDropEffects.All);
-            }
         }
 
-        private void TabControl_MouseUp(object sender, MouseEventArgs e)
+        private void TabControl_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            // If the mouse is over the close button, close the tab and return
             if (isOverCloseButton)
             {
                 for (int i = 0; i < BrowserTabs.TabPages.Count; i++)
                 {
                     Rectangle r = BrowserTabs.GetTabRect(i);
-                    // Getting the position of the "x" mark.
                     Rectangle closeButton = new Rectangle(r.Right - 30, r.Top / 2, 30, 15);
                     if (closeButton.Contains(e.Location))
                     {
                         BrowserTabs.TabPages.RemoveAt(i);
                         selectedPage = null;
                         if (BrowserTabs.TabCount == 1) { this.Close(); }
+
                         return;
                     }
                 }
             }
 
-            // If the mouse is not over the close button, handle tab dragging
             if (selectedPage != null && selectedPage != PlusPage)
             {
                 TabPage swappedPage = GetPageByPoint(BrowserTabs, e.Location);
@@ -549,7 +496,7 @@ namespace ChromiumBrowser
         private void TabControl_DrawItem(object sender, DrawItemEventArgs e)
         {
             if (e.Index >= 0 && e.Index < BrowserTabs.TabCount)
-            {
+            { 
                 // Set up the image bounds and size
                 Rectangle imageBounds = new Rectangle(e.Bounds.Left, e.Bounds.Top, 25, 25);
 
@@ -594,8 +541,21 @@ namespace ChromiumBrowser
                     e.Graphics.DrawString("x", e.Font, Brushes.Black, xBounds);
                 }
 
-                e.DrawFocusRectangle();
+                //e.DrawFocusRectangle();
             }
+        }
+
+        byte redVal, greenVal, blueVal;
+        private void redUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            redVal = (byte)redUpDown.Value;
+            changeControlColors();
+        }
+
+        private void greenUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            greenVal = (byte)greenUpDown.Value;
+            changeControlColors();
         }
 
         private void blueUpDown_ValueChanged(object sender, EventArgs e)
@@ -611,6 +571,8 @@ namespace ChromiumBrowser
             ToolStrip.BackColor = color;
             Address.BackColor = color;
             BrowserTabs.BackColor = color;
+
+            BrowserTabs.Invalidate();
         }
 
     }
