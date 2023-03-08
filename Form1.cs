@@ -62,6 +62,7 @@ namespace ChromiumBrowser
             if (!incognitoModeOn) { visitedPages.Add(e.Address); }
         }
         int totalWidth = 0;
+
         private void BrowserResize(object sender, EventArgs e)
         {
             totalWidth = 0;
@@ -327,7 +328,7 @@ namespace ChromiumBrowser
         }
 
         TabPage page;
-        private void CreateNewTab(string url)
+        public void CreateNewTab(string url)
         {
             page = new TabPage();
 
@@ -348,13 +349,14 @@ namespace ChromiumBrowser
 
             BrowserTabs.TabPages.Add(page);
 
-            txtbox.Width = 50;
-            txtbox.Height = 30;
-            txtbox.Anchor = (AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top);
-            txtbox.AutoSize = false;
-            int x = (page.Size.Width - txtbox.Size.Width) / 2;
-            int y = (page.Size.Height - txtbox.Size.Height) / 2;
+            //txtbox.Width = 50;
+            //txtbox.Height = 30;
+            //txtbox.Anchor = (AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top);
+            //txtbox.AutoSize = false;
+            int x = (this.Size.Width - txtbox.Size.Width) / 2;
+            int y = (this.Size.Height - txtbox.Size.Height) / 2;
             txtbox.Location = new Point(x, y);
+            this.Controls.Add(txtbox);
 
             txtbox.Click += (s, args) =>
             {
