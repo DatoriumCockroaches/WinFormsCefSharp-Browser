@@ -24,6 +24,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Windows.Input;
 using System.Runtime.CompilerServices;
+using System.Windows.Media;
 
 namespace ChromiumBrowser
 {
@@ -47,13 +48,20 @@ namespace ChromiumBrowser
 
             BrowserTabs.ImageList = imgList;
             imgList.Images.Add(Properties.Resources.settings);
-            imgList.ImageSize = new Size(32, 32);
+            imgList.ImageSize = new Size(30, 30);
 
             this.Text = "Cockroach Browser";
             this.Icon = Resources.chromium;
             this.Update();
-            this.KeyPreview = true;
-            this.Focus();
+
+
+            color = System.Drawing.Color.White;
+            txtColor = System.Drawing.Color.White;
+            borderColor = System.Drawing.Color.White;
+
+            backBrush = new SolidBrush(color);
+            borderBrush = new SolidBrush(borderColor);
+            txtBrush = new SolidBrush(txtColor);
         }
 
         public void InitializeBrowser()
@@ -269,7 +277,7 @@ namespace ChromiumBrowser
                 urlLabel.Font = new Font("Arial", 10, FontStyle.Regular);
                 urlLabel.AutoSize = true;
                 urlLabel.Location = new Point(30, labelY);
-                urlLabel.ForeColor = Color.Blue;
+                urlLabel.ForeColor = System.Drawing.Color.Blue;
                 urlLabel.Cursor = System.Windows.Forms.Cursors.Hand;
 
                 btn.Location = new Point(10, labelY);
@@ -403,7 +411,7 @@ namespace ChromiumBrowser
             incognitoModeOn = !incognitoModeOn;
             if (incognitoModeOn == true)
             {
-                button1.BackColor = Color.Green;
+                button1.BackColor = System.Drawing.Color.Green;
             }
             else
             {
@@ -493,10 +501,25 @@ namespace ChromiumBrowser
 
 
 
+        SolidBrush backBrush, borderBrush, txtBrush;
+
         private void TabControl_DrawItem(object sender, DrawItemEventArgs e)
         {
             if (e.Index >= 0 && e.Index < BrowserTabs.TabCount)
-            { 
+            {
+                // Get the bounds of the tab page
+                Rectangle tabPageBounds = BrowserTabs.GetTabRect(e.Index);
+
+                // Fill the background of the tab page with the desired color
+                if (BrowserTabs.SelectedIndex == e.Index)
+                {
+                    e.Graphics.FillRectangle(backBrush, tabPageBounds);
+                }
+                else
+                {
+                    e.Graphics.FillRectangle(backBrush, tabPageBounds);
+                }
+
                 // Set up the image bounds and size
                 Rectangle imageBounds = new Rectangle(e.Bounds.Left, e.Bounds.Top, 25, 25);
 
@@ -523,54 +546,100 @@ namespace ChromiumBrowser
                 // Draw the tab text
                 try
                 {
-                    e.Graphics.DrawString(BrowserTabs.TabPages[e.Index].Text, e.Font, Brushes.Black, textBounds);
+                    e.Graphics.DrawString(BrowserTabs.TabPages[e.Index].Text, e.Font, System.Drawing.Brushes.Black, textBounds);
                 }
                 catch (Exception)
                 {
-                    e.Graphics.DrawString($"Tab {TabNum}", e.Font, Brushes.Black, textBounds);
+                    e.Graphics.DrawString($"Tab {TabNum}", e.Font, System.Drawing.Brushes.Black, textBounds);
                 }
 
                 if (e.Index < this.BrowserTabs.TabCount - 1)
                 {
                     // Draw the rectangle behind the X
-                    Rectangle rect = new Rectangle(e.Bounds.Right - 30, e.Bounds.Y/2, 30, 30);
-                    e.Graphics.FillRectangle(SystemBrushes.Control, rect);
+                    Rectangle rect = new Rectangle(e.Bounds.Right - 30, e.Bounds.Y/2, 30, tabPageBounds.Height);
+                    e.Graphics.FillRectangle(backBrush, rect);
 
                     // Draw the X
                     Rectangle xBounds = new Rectangle(e.Bounds.Right - 30, e.Bounds.Y / 2, 30, e.Bounds.Height);
-                    e.Graphics.DrawString("x", e.Font, Brushes.Black, xBounds);
+                    e.Graphics.DrawString("x", e.Font, System.Drawing.Brushes.Black, xBounds);
                 }
+
+                e.Graphics.DrawRectangle(new System.Drawing.Pen(borderColor, 5), e.Bounds);
 
                 //e.DrawFocusRectangle();
             }
         }
 
         byte redVal, greenVal, blueVal;
-        private void redUpDown_ValueChanged(object sender, EventArgs e)
+        byte borderRed, borderGreen, borderBlue;
+        byte txtRed, txtGreen, txtBlue;
+
+        private void txtValChanged(object sender, EventArgs e)
+        {
+            txtRed = (byte)txtUpDownRed.Value;
+            txtGreen = (byte)txtUpDownGreen.Value;
+            txtBlue = (byte)txtUpDownBlue.Value;
+
+            changeTextColor();
+        }
+
+        private void borderValChanged(object sender, EventArgs e)
+        {
+            borderRed = (byte)borderRedUpDown.Value;
+            borderGreen = (byte)borderGreenUpDown.Value;
+            borderBlue = (byte)borderBlueUpDown.Value;
+
+            changeBorderColor();
+        }
+
+        private void backGroundNumericChange(object sender, EventArgs e)
         {
             redVal = (byte)redUpDown.Value;
-            changeControlColors();
-        }
-
-        private void greenUpDown_ValueChanged(object sender, EventArgs e)
-        {
             greenVal = (byte)greenUpDown.Value;
-            changeControlColors();
-        }
-
-        private void blueUpDown_ValueChanged(object sender, EventArgs e)
-        {
             blueVal = (byte)blueUpDown.Value;
+
             changeControlColors();
         }
 
+        System.Drawing.Color color, txtColor, borderColor = new System.Drawing.Color();
         private void changeControlColors()
         {
-            Color color = Color.FromArgb(redVal, greenVal, blueVal);
+            color = System.Drawing.Color.FromArgb(redVal, greenVal, blueVal);
+
             panel.BackColor = color;
             ToolStrip.BackColor = color;
             Address.BackColor = color;
             BrowserTabs.BackColor = color;
+            colorBox.BackColor = color;
+
+            backBrush = new SolidBrush(color);
+
+            BrowserTabs.Invalidate();
+        }
+
+        private void changeTextColor()
+        {
+            txtColor = System.Drawing.Color.FromArgb(txtRed, txtGreen, txtBlue);
+
+            settingsBtn.ForeColor = txtColor;
+            toolStripButton1.ForeColor = txtColor;
+            toolStripButton2.ForeColor = txtColor;
+            toolStripButton3.ForeColor = txtColor;
+            label1.ForeColor = txtColor;
+            label2.ForeColor = txtColor;
+            label3.ForeColor = txtColor;
+            Address.ForeColor = txtColor;
+            pictureBox2.BackColor = txtColor;
+
+            BrowserTabs.Invalidate();
+        }
+
+        private void changeBorderColor()
+        {
+            borderColor = System.Drawing.Color.FromArgb(borderRed, borderGreen, borderBlue);
+
+            pictureBox1.BackColor = borderColor;
+            BrowserTabs.ForeColor = borderColor;
 
             BrowserTabs.Invalidate();
         }
