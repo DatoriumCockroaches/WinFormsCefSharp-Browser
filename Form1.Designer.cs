@@ -42,7 +42,6 @@
             this.BrowserTabs = new System.Windows.Forms.TabControl();
             this.panel = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
-            this.advancedSettings = new System.Windows.Forms.Button();
             this.historyBtn = new System.Windows.Forms.Button();
             this.blueUpDown = new System.Windows.Forms.NumericUpDown();
             this.greenUpDown = new System.Windows.Forms.NumericUpDown();
@@ -50,6 +49,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.colorBox = new System.Windows.Forms.PictureBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.button2 = new System.Windows.Forms.Button();
+            this.toggleRepeat = new System.Windows.Forms.RadioButton();
             this.ToolStrip.SuspendLayout();
             this.panel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.blueUpDown)).BeginInit();
@@ -72,8 +73,8 @@
             this.settingsBtn});
             this.ToolStrip.Location = new System.Drawing.Point(0, 0);
             this.ToolStrip.Name = "ToolStrip";
-            this.ToolStrip.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.ToolStrip.Size = new System.Drawing.Size(533, 53);
+            this.ToolStrip.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
+            this.ToolStrip.Size = new System.Drawing.Size(800, 55);
             this.ToolStrip.TabIndex = 1;
             this.ToolStrip.Text = "toolStrip1";
             // 
@@ -125,7 +126,7 @@
             this.Address.Font = new System.Drawing.Font("Segoe UI", 18F);
             this.Address.Margin = new System.Windows.Forms.Padding(0);
             this.Address.Name = "Address";
-            this.Address.Size = new System.Drawing.Size(268, 39);
+            this.Address.Size = new System.Drawing.Size(400, 55);
             this.Address.Text = "Search";
             this.Address.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SearchBarKeyDown);
             this.Address.Click += new System.EventHandler(this.Address_Click);
@@ -182,17 +183,17 @@
             this.BrowserTabs.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
             this.BrowserTabs.Dock = System.Windows.Forms.DockStyle.Fill;
             this.BrowserTabs.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F);
-            this.BrowserTabs.Location = new System.Drawing.Point(0, 53);
-            this.BrowserTabs.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.BrowserTabs.Location = new System.Drawing.Point(0, 55);
             this.BrowserTabs.Name = "BrowserTabs";
             this.BrowserTabs.SelectedIndex = 0;
-            this.BrowserTabs.Size = new System.Drawing.Size(533, 434);
+            this.BrowserTabs.Size = new System.Drawing.Size(800, 694);
             this.BrowserTabs.TabIndex = 2;
             // 
             // panel
             // 
+            this.panel.Controls.Add(this.toggleRepeat);
+            this.panel.Controls.Add(this.button2);
             this.panel.Controls.Add(this.button1);
-            this.panel.Controls.Add(this.advancedSettings);
             this.panel.Controls.Add(this.historyBtn);
             this.panel.Controls.Add(this.blueUpDown);
             this.panel.Controls.Add(this.greenUpDown);
@@ -200,42 +201,28 @@
             this.panel.Controls.Add(this.label1);
             this.panel.Controls.Add(this.colorBox);
             this.panel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel.Location = new System.Drawing.Point(266, 53);
-            this.panel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.panel.MaximumSize = new System.Drawing.Size(267, 0);
+            this.panel.Location = new System.Drawing.Point(400, 55);
+            this.panel.MaximumSize = new System.Drawing.Size(400, 0);
             this.panel.Name = "panel";
-            this.panel.Size = new System.Drawing.Size(267, 434);
+            this.panel.Size = new System.Drawing.Size(400, 694);
             this.panel.TabIndex = 3;
             // 
             // button1
             // 
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.button1.Location = new System.Drawing.Point(7, 240);
-            this.button1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button1.Location = new System.Drawing.Point(10, 369);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(252, 42);
+            this.button1.Size = new System.Drawing.Size(378, 65);
             this.button1.TabIndex = 7;
             this.button1.Text = "Incognito";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // advancedSettings
-            // 
-            this.advancedSettings.Location = new System.Drawing.Point(7, 286);
-            this.advancedSettings.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.advancedSettings.Name = "advancedSettings";
-            this.advancedSettings.Size = new System.Drawing.Size(253, 35);
-            this.advancedSettings.TabIndex = 6;
-            this.advancedSettings.Text = "Advanced settings";
-            this.advancedSettings.UseVisualStyleBackColor = true;
-            this.advancedSettings.Click += new System.EventHandler(this.advancedSettings_Click);
-            // 
             // historyBtn
             // 
-            this.historyBtn.Location = new System.Drawing.Point(7, 209);
-            this.historyBtn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.historyBtn.Location = new System.Drawing.Point(10, 322);
             this.historyBtn.Name = "historyBtn";
-            this.historyBtn.Size = new System.Drawing.Size(252, 28);
+            this.historyBtn.Size = new System.Drawing.Size(378, 43);
             this.historyBtn.TabIndex = 5;
             this.historyBtn.Text = "History";
             this.historyBtn.UseVisualStyleBackColor = true;
@@ -244,45 +231,42 @@
             // blueUpDown
             // 
             this.blueUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.blueUpDown.Location = new System.Drawing.Point(180, 165);
-            this.blueUpDown.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.blueUpDown.Location = new System.Drawing.Point(270, 254);
             this.blueUpDown.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.blueUpDown.Name = "blueUpDown";
-            this.blueUpDown.Size = new System.Drawing.Size(80, 29);
+            this.blueUpDown.Size = new System.Drawing.Size(120, 39);
             this.blueUpDown.TabIndex = 4;
             this.blueUpDown.ValueChanged += new System.EventHandler(this.blueUpDown_ValueChanged);
             // 
             // greenUpDown
             // 
             this.greenUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.greenUpDown.Location = new System.Drawing.Point(93, 165);
-            this.greenUpDown.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.greenUpDown.Location = new System.Drawing.Point(140, 254);
             this.greenUpDown.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.greenUpDown.Name = "greenUpDown";
-            this.greenUpDown.Size = new System.Drawing.Size(80, 29);
+            this.greenUpDown.Size = new System.Drawing.Size(120, 39);
             this.greenUpDown.TabIndex = 3;
             this.greenUpDown.ValueChanged += new System.EventHandler(this.greenUpDown_ValueChanged);
             // 
             // redUpDown
             // 
             this.redUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.redUpDown.Location = new System.Drawing.Point(7, 165);
-            this.redUpDown.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.redUpDown.Location = new System.Drawing.Point(10, 254);
             this.redUpDown.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.redUpDown.Name = "redUpDown";
-            this.redUpDown.Size = new System.Drawing.Size(80, 29);
+            this.redUpDown.Size = new System.Drawing.Size(120, 39);
             this.redUpDown.TabIndex = 2;
             this.redUpDown.ValueChanged += new System.EventHandler(this.redUpDown_ValueChanged);
             // 
@@ -290,32 +274,53 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F);
-            this.label1.Location = new System.Drawing.Point(3, 18);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Location = new System.Drawing.Point(4, 28);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(164, 25);
+            this.label1.Size = new System.Drawing.Size(250, 36);
             this.label1.TabIndex = 1;
             this.label1.Text = "Background color";
             // 
             // colorBox
             // 
             this.colorBox.BackColor = System.Drawing.Color.White;
-            this.colorBox.Location = new System.Drawing.Point(7, 43);
-            this.colorBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.colorBox.Location = new System.Drawing.Point(10, 66);
             this.colorBox.Name = "colorBox";
-            this.colorBox.Size = new System.Drawing.Size(253, 107);
+            this.colorBox.Size = new System.Drawing.Size(380, 165);
             this.colorBox.TabIndex = 0;
             this.colorBox.TabStop = false;
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(10, 440);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(378, 57);
+            this.button2.TabIndex = 8;
+            this.button2.Text = "Change background";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.changeBg_BtnClick);
+            // 
+            // toggleRepeat
+            // 
+            this.toggleRepeat.AutoSize = true;
+            this.toggleRepeat.Checked = true;
+            this.toggleRepeat.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F);
+            this.toggleRepeat.Location = new System.Drawing.Point(10, 517);
+            this.toggleRepeat.Name = "toggleRepeat";
+            this.toggleRepeat.Size = new System.Drawing.Size(369, 34);
+            this.toggleRepeat.TabIndex = 9;
+            this.toggleRepeat.TabStop = true;
+            this.toggleRepeat.Text = "Toggle repeating background";
+            this.toggleRepeat.UseVisualStyleBackColor = true;
+            this.toggleRepeat.Click += new System.EventHandler(this.ToggleRepeatingBg);
+            // 
             // Browser
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(533, 487);
+            this.ClientSize = new System.Drawing.Size(800, 749);
             this.Controls.Add(this.panel);
             this.Controls.Add(this.BrowserTabs);
             this.Controls.Add(this.ToolStrip);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "Browser";
             this.Text = "Browser";
             this.Resize += new System.EventHandler(this.BrowserResize);
@@ -347,12 +352,13 @@
         private System.Windows.Forms.NumericUpDown redUpDown;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.Button historyBtn;
-        private System.Windows.Forms.Button advancedSettings;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ToolStripButton settingsBtn;
         private System.Windows.Forms.ToolStripButton toolStripButton3;
         private System.Windows.Forms.ToolStripButton toolStripButton2;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.RadioButton toggleRepeat;
     }
 }
 

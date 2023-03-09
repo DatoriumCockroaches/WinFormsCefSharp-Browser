@@ -47,6 +47,8 @@ namespace ChromiumBrowser
             this.Text = "Cockroach Browser";
             this.Icon = Resources.chromium;
             this.Update();
+
+            image = Image.FromFile(mainDir + bgPath);
         }
 
         public void InitializeBrowser()
@@ -327,6 +329,7 @@ namespace ChromiumBrowser
         }
 
         TabPage page;
+        Image image;
         private void CreateNewTab(string url)
         {
             page = new TabPage();
@@ -335,7 +338,8 @@ namespace ChromiumBrowser
 
             chromiumWebBrowser.Dock = DockStyle.Fill;
 
-            page.BackgroundImage = Image.FromFile(mainDir + bgPath);
+            page.BackgroundImage = image;
+            if (repeatingBg) { page.BackgroundImageLayout = ImageLayout.Tile; } else { page.BackgroundImageLayout = ImageLayout.Zoom; }
             page.BackgroundImageLayout = ImageLayout.Tile;
 
             page.Text = $"Tab {TabNum}";
@@ -362,9 +366,9 @@ namespace ChromiumBrowser
             };
             txtbox.KeyDown += (s, e) =>
             {
-                page.Controls.Add(chromiumWebBrowser);
                 if (e.KeyCode == Keys.Enter)
                 {
+                    page.Controls.Add(chromiumWebBrowser);
                     SearchAdress(chromiumWebBrowser, txtbox.Text);
                     page.Controls.Remove(txtbox);
                 }
@@ -472,11 +476,6 @@ namespace ChromiumBrowser
             }
         }
 
-        private void advancedSettings_Click(object sender, EventArgs e)
-        {
-            //TODO add something here
-        }
-
         private void Address_Click(object sender, EventArgs e)
         {
            Address.Text = "";
@@ -493,6 +492,28 @@ namespace ChromiumBrowser
         {
             greenVal = (byte)greenUpDown.Value;
             changeControlColors();
+        }
+
+        OpenFileDialog dialog = new OpenFileDialog();
+        private void changeBg_BtnClick(object sender, EventArgs e)
+        {
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                image = new Bitmap(dialog.FileName);
+                page.BackgroundImage = image;
+
+            }
+            else
+            {
+                MessageBox.Show("Error getting image");
+            }
+
+        }
+
+        bool repeatingBg = true;
+        private void ToggleRepeatingBg(object sender, EventArgs e)
+        {
+            repeatingBg = !repeatingBg;
         }
 
         private void blueUpDown_ValueChanged(object sender, EventArgs e)
