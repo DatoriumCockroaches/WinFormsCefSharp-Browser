@@ -33,11 +33,12 @@ namespace ChromiumBrowser
     {
         ChromiumWebBrowser chromiumBrowser = null;
         List<ChromiumWebBrowser> chromiumBrowsers = new List<ChromiumWebBrowser>();
+
+        List<Tuple<string, string>> visitedPagesList = new List<Tuple<string, string>>();
+
         ImageList imgList = new ImageList();
 
         TabPage PlusPage = new TabPage();
-
-        List<string> visitedPages = new List<string>();
         int TabNum = 1;
 
         public Browser()
@@ -56,7 +57,7 @@ namespace ChromiumBrowser
 
 
             color = System.Drawing.Color.White;
-            txtColor = System.Drawing.Color.White;
+            txtColor = System.Drawing.Color.Black;
             borderColor = System.Drawing.Color.White;
 
             backBrush = new SolidBrush(color);
@@ -70,7 +71,7 @@ namespace ChromiumBrowser
             Cef.Initialize(settings);
 
             BrowserTabs.SizeMode = TabSizeMode.Fixed;
-            BrowserTabs.ItemSize = new Size(200, 30);
+            BrowserTabs.ItemSize = new Size(200, 28);
 
             CreateNewTab("google.com");
             PlusPage.Text = "+";
@@ -86,10 +87,6 @@ namespace ChromiumBrowser
             }
         }
 
-        private void OnBrowserAddressChanged(object sender, AddressChangedEventArgs e)
-        {
-            if (!incognitoModeOn) { visitedPages.Add(e.Address); }
-        }
         int totalWidth = 0;
         private void BrowserResize(object sender, EventArgs e)
         {
@@ -135,7 +132,7 @@ namespace ChromiumBrowser
                 if (tabPage.Text == "History")
                 {
                     chromiumBrowser = new ChromiumWebBrowser();
-                    chromiumBrowser.AddressChanged += OnBrowserAddressChanged;
+                    chromiumBrowser.TitleChanged += ChromiumBrowser_TitleChanged;
                     chromiumBrowser.FrameLoadEnd += browser_FrameLoadEnd;
                     chromiumBrowser.Dock = DockStyle.Fill;
 
@@ -148,6 +145,25 @@ namespace ChromiumBrowser
                 }
 
                 SearchAdress(chromiumBrowser);
+            }
+        }
+
+        string title;
+        private void ChromiumBrowser_TitleChanged(object sender, TitleChangedEventArgs e)
+        {
+            title = e.Title;
+            var tuple = new Tuple<string, string>(e.Title, chromiumWebBrowser.Address);
+            try
+            {
+                if (visitedPagesList.Last().Item1 != tuple.Item1)
+                {
+                    visitedPagesList.Add(tuple);
+                }
+            } 
+            catch (Exception)
+            {
+                //null list
+                visitedPagesList.Add(tuple);
             }
         }
 
@@ -236,7 +252,13 @@ namespace ChromiumBrowser
                     page.Controls.Remove(control);
                     control.Dispose();
                 }
-                visitedPages.Clear();
+                visitedPagesList.Clear();
+                while (page.Controls.Count > 0)
+                {
+                    Control control = page.Controls[0];
+                    page.Controls.Remove(control);
+                }
+                GenerateHistory(labelY, page);
             };
 
             removeSelected.Click += (s, args) =>
@@ -246,6 +268,12 @@ namespace ChromiumBrowser
                     page.Controls.Remove(controlsToRemove[0]);
                     controlsToRemove.RemoveAt(0);
                 }
+                while (page.Controls.Count > 0)
+                {
+                    Control control = page.Controls[0];
+                    page.Controls.Remove(control);
+                }
+                GenerateHistory(labelY, page);
             };
 
             removeAll.Text = "Clear history";
@@ -261,29 +289,46 @@ namespace ChromiumBrowser
         }
 
         List<Control> controlsToRemove = new List<Control>();
+        Bitmap img;
         private int GenerateHistory(int labelY, TabPage page)
         {
             labelY = 5;
-            foreach (var url in visitedPages)
+            foreach (var tuple in visitedPagesList)
             {
                 System.Windows.Forms.Label urlLabel = new System.Windows.Forms.Label();
+                PictureBox pictureBox = new PictureBox();
 
                 CheckBox btn = new CheckBox();
                 btn.AutoSize = true;
                 btn.Text = "X";
                 btn.Font = new Font("Arial", 10, FontStyle.Regular);
 
-                urlLabel.Text = url.ToString();
+                urlLabel.Text = tuple.Item1.ToString();
                 urlLabel.Font = new Font("Arial", 10, FontStyle.Regular);
                 urlLabel.AutoSize = true;
-                urlLabel.Location = new Point(30, labelY);
+                urlLabel.Location = new Point(100, labelY);
                 urlLabel.ForeColor = System.Drawing.Color.Blue;
                 urlLabel.Cursor = System.Windows.Forms.Cursors.Hand;
 
+                try
+                {
+                    iconUrl = new Uri("https://" + new Uri(tuple.Item2).Host + "/favicon.ico");
+                    stream = client.OpenRead(iconUrl);
+                    img = new Bitmap(stream);
+                } catch (Exception)
+                {
+                    img = Resources.chromium.ToBitmap();
+                }
+                pictureBox.Image = img;
+                pictureBox.Size = new Size(25, 25);
+                pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+
                 btn.Location = new Point(10, labelY);
 
+                pictureBox.Location = new Point(60, labelY);
+
                 urlLabel.Click += (s, args) => {
-                    CreateNewTab(url);
+                    CreateNewTab(tuple.Item2);
                 };
 
                 btn.CheckedChanged += (s, args) =>
@@ -292,18 +337,20 @@ namespace ChromiumBrowser
                     {
                         controlsToRemove.Add(btn);
                         controlsToRemove.Add(urlLabel);
-                        visitedPages.Remove(urlLabel.Text);
+                        visitedPagesList.Remove(tuple);
                     }
                     else
                     {
                         controlsToRemove.Remove(btn);
                         controlsToRemove.Remove(urlLabel);
-                        visitedPages.Add(urlLabel.Text);
+                        visitedPagesList.Add(tuple);
                     }
                 };
 
                 BrowserTabs.TabPages[BrowserTabs.TabPages.IndexOf(page)].Controls.Add(urlLabel);
                 BrowserTabs.TabPages[BrowserTabs.TabPages.IndexOf(page)].Controls.Add(btn);
+                BrowserTabs.TabPages[BrowserTabs.TabPages.IndexOf(page)].Controls.Add(pictureBox);
+
 
                 labelY = urlLabel.Bottom + 5;
             }
@@ -317,18 +364,19 @@ namespace ChromiumBrowser
         }
 
         TabPage page;
+        ChromiumWebBrowser chromiumWebBrowser;
         private void CreateNewTab(string url)
         {
             page = new TabPage();
             BrowserTabs.SelectedTab = page;
 
-            ChromiumWebBrowser chromiumWebBrowser = new ChromiumWebBrowser();
+            chromiumWebBrowser = new ChromiumWebBrowser();
 
             if (url != null) { chromiumWebBrowser.Load(url); }
             else { chromiumWebBrowser.Load("google.com"); }
 
             chromiumWebBrowser.FrameLoadEnd += browser_FrameLoadEnd;
-            chromiumWebBrowser.AddressChanged += OnBrowserAddressChanged;
+            chromiumWebBrowser.TitleChanged += ChromiumBrowser_TitleChanged;
             chromiumWebBrowser.Dock = DockStyle.Fill;
 
             page.Text = $"Tab {TabNum}";
@@ -353,14 +401,13 @@ namespace ChromiumBrowser
             if (e.Frame.IsMain)
             {
                 ChromiumWebBrowser browser = (ChromiumWebBrowser)sender;
-                string url = browser.Address;
 
-                string domainName = GetDomainName(url);
+                string url = chromiumWebBrowser.Address;
 
                 this.Invoke(new Action(() =>
                 {
-                    BrowserTabs.SelectedTab.Text = domainName;
-
+                    BrowserTabs.SelectedTab.Text = title;
+                    
                     try
                     {
                         iconUrl = new Uri("https://" + new Uri(url).Host + "/favicon.ico");
@@ -384,26 +431,7 @@ namespace ChromiumBrowser
             }
         }
 
-        private string GetDomainName(string url)
-        {
-            bool page_safe = url.Contains("https:");
-            bool page_unsafe = url.Contains("http:");
-            string domain_name = null;
-            if (page_safe)
-            {
-                //s.Substring(url + 2)
-                domain_name = url.Substring(12); //this is how many characters are in "https://www."
-                domain_name = domain_name.Substring(0, domain_name.IndexOf("/")); //cuts the end off
-            }
-            else if (page_unsafe)
-            {
-                domain_name = url.Substring(11); //this is how many characters are in "http://www."
-                domain_name = domain_name.Substring(0, domain_name.IndexOf("/")); //cuts the end off
-            }
-            return domain_name;
-        }
-
-
+      
         bool incognitoModeOn = false;
 
         private void button1_Click(object sender, EventArgs e)
@@ -474,7 +502,11 @@ namespace ChromiumBrowser
                     Rectangle closeButton = new Rectangle(r.Right - 30, r.Top / 2, 30, 15);
                     if (closeButton.Contains(e.Location))
                     {
-                        BrowserTabs.TabPages.RemoveAt(i);
+                        TabPage pg = BrowserTabs.TabPages[i];
+
+                        BrowserTabs.TabPages.Remove(pg);
+                        pg.Dispose();
+
                         selectedPage = null;
                         if (BrowserTabs.TabCount == 1) { this.Close(); }
 
@@ -511,14 +543,7 @@ namespace ChromiumBrowser
                 Rectangle tabPageBounds = BrowserTabs.GetTabRect(e.Index);
 
                 // Fill the background of the tab page with the desired color
-                if (BrowserTabs.SelectedIndex == e.Index)
-                {
-                    e.Graphics.FillRectangle(backBrush, tabPageBounds);
-                }
-                else
-                {
-                    e.Graphics.FillRectangle(backBrush, tabPageBounds);
-                }
+                e.Graphics.FillRectangle(backBrush, tabPageBounds);
 
                 // Set up the image bounds and size
                 Rectangle imageBounds = new Rectangle(e.Bounds.Left, e.Bounds.Top, 25, 25);
@@ -541,17 +566,23 @@ namespace ChromiumBrowser
                 }
 
                 // Set up the text bounds
-                Rectangle textBounds = new Rectangle(e.Bounds.X + 20, e.Bounds.Y, e.Bounds.Width - 20, e.Bounds.Height);
+                Rectangle textBounds = new Rectangle(e.Bounds.X + 20, e.Bounds.Y, e.Bounds.Width, e.Bounds.Height);
 
                 // Draw the tab text
                 try
                 {
-                    e.Graphics.DrawString(BrowserTabs.TabPages[e.Index].Text, e.Font, System.Drawing.Brushes.Black, textBounds);
+                    string text = BrowserTabs.TabPages[e.Index].Text;
+                    if (text.Length > 13)//cut off after 13 chars
+                    {
+                        text = text.Substring(0, 13);
+                    }
+                    e.Graphics.DrawString(text, e.Font, txtBrush, textBounds);
                 }
                 catch (Exception)
                 {
-                    e.Graphics.DrawString($"Tab {TabNum}", e.Font, System.Drawing.Brushes.Black, textBounds);
+                    e.Graphics.DrawString($"Tab {TabNum}", e.Font, txtBrush, textBounds);
                 }
+
 
                 if (e.Index < this.BrowserTabs.TabCount - 1)
                 {
@@ -561,12 +592,10 @@ namespace ChromiumBrowser
 
                     // Draw the X
                     Rectangle xBounds = new Rectangle(e.Bounds.Right - 30, e.Bounds.Y / 2, 30, e.Bounds.Height);
-                    e.Graphics.DrawString("x", e.Font, System.Drawing.Brushes.Black, xBounds);
+                    e.Graphics.DrawString("x", e.Font, txtBrush, xBounds);
                 }
 
                 e.Graphics.DrawRectangle(new System.Drawing.Pen(borderColor, 5), e.Bounds);
-
-                //e.DrawFocusRectangle();
             }
         }
 
@@ -630,6 +659,8 @@ namespace ChromiumBrowser
             label3.ForeColor = txtColor;
             Address.ForeColor = txtColor;
             pictureBox2.BackColor = txtColor;
+
+            txtBrush = new SolidBrush(txtColor);
 
             BrowserTabs.Invalidate();
         }
