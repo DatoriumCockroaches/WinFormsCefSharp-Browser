@@ -32,7 +32,6 @@ namespace ChromiumBrowser
     public partial class Browser : Form
     {
         ChromiumWebBrowser chromiumBrowser = null;
-        List<ChromiumWebBrowser> chromiumBrowsers = new List<ChromiumWebBrowser>();
 
         List<Tuple<string, string>> visitedPagesList = new List<Tuple<string, string>>();
         List<TabPage> mainPages = new List<TabPage>();
@@ -47,12 +46,12 @@ namespace ChromiumBrowser
 
         public Browser()
         {
+            InitializeComponent();
             mainDir = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName((new System.Uri(Assembly.GetEntryAssembly().CodeBase)).AbsolutePath)));
             bgPath = Path.Combine(mainDir, "\\Resources\\Bg1.jpg");
 
             image = new Bitmap(mainDir + bgPath);
 
-            InitializeComponent();
             InitializeBrowser();
             panel.Width = 0;
 
@@ -83,9 +82,6 @@ namespace ChromiumBrowser
             BrowserTabs.ItemSize = new Size(200, 28);
 
             CreateMainPage();
-            PlusPage.Text = "+";
-            BrowserTabs.Controls.Add(PlusPage);
-            BrowserTabs.Click += BrowserTabs_Click;
             PlusPage.Text = "+";
             BrowserTabs.Controls.Add(PlusPage);
             BrowserTabs.Click += BrowserTabs_Click;
@@ -140,7 +136,7 @@ namespace ChromiumBrowser
                 }
             }
         }
-        private void SearchBarKeyDown(object sender, KeyEventArgs e)
+        private void SearchBarKeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
@@ -233,7 +229,6 @@ namespace ChromiumBrowser
 
             if (visitedPagesList.Last().Item1 != tuple.Item1 && !incognitoModeOn)
             {
-                MessageBox.Show(incognitoModeOn.ToString());
                 visitedPagesList.Add(tuple);
             }
 
@@ -526,34 +521,6 @@ namespace ChromiumBrowser
             {
                 page.BackgroundImageLayout = ImageLayout.Stretch;
             }
-
-            txtbox.Width = 1500;
-            txtbox.Height = 70;
-
-            txtbox.AutoSize = false;
-
-            int x = (page.Size.Width - txtbox.Size.Width) / 2;
-            int y = (page.Size.Height - txtbox.Size.Height) / 2;
-
-            txtbox.Location = new Point(x, y);
-            this.Controls.Add(txtbox);
-
-            txtbox.Click += (s, args) =>
-            {
-                txtbox.Text = "";
-            };
-            txtbox.KeyDown += (s, e) =>
-            {
-                if (e.KeyCode == Keys.Enter)
-                {
-                    page.Controls.Add(chromiumWebBrowser);
-                    SearchAdress(chromiumWebBrowser, txtbox.Text);
-                    page.Controls.Remove(txtbox);
-                    mainPages.Remove(page);
-                    textBoxes.Remove(txtbox);
-                }
-            };
-            page.Controls.Add(txtbox);
         }
 
         WebClient client = new WebClient();
@@ -568,8 +535,6 @@ namespace ChromiumBrowser
                 ChromiumWebBrowser browser = (ChromiumWebBrowser)sender;
 
                 string url = browser.Address;
-
-                string url = chromiumWebBrowser.Address;
 
                 this.Invoke(new Action(() =>
                 {
