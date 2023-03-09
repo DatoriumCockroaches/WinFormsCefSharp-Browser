@@ -65,6 +65,7 @@ namespace ChromiumBrowser
             if (!incognitoModeOn) { visitedPages.Add(e.Address); }
         }
         int totalWidth = 0;
+
         private void BrowserResize(object sender, EventArgs e)
         {
             totalWidth = 0;
@@ -370,6 +371,7 @@ namespace ChromiumBrowser
             int y = (page.Size.Height - txtbox.Size.Height) / 2;
 
             txtbox.Location = new Point(x, y);
+            this.Controls.Add(txtbox);
 
             txtbox.Click += (s, args) =>
             {
