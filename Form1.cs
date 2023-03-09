@@ -19,6 +19,13 @@ using System.Security.Cryptography;
 using System.Reflection.Emit;
 using CefSharp.DevTools.DOMSnapshot;
 using CefSharp.DevTools.Browser;
+using System.Net;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
+using System.Windows.Input;
+using System.Runtime.CompilerServices;
+using System.Windows.Media;
+using System.Reflection;
 
 namespace ChromiumBrowser
 {
@@ -27,8 +34,13 @@ namespace ChromiumBrowser
     {
         ChromiumWebBrowser chromiumBrowser = null;
         List<ChromiumWebBrowser> chromiumBrowsers = new List<ChromiumWebBrowser>();
-      
-        List<string> visitedPages = new List<string>();
+
+        List<Tuple<string, string>> visitedPagesList = new List<Tuple<string, string>>();
+        List<TabPage> mainPages = new List<TabPage>();
+
+        ImageList imgList = new ImageList();
+
+        TabPage PlusPage = new TabPage();
         int TabNum = 1;
 
         public Browser()
@@ -82,12 +94,15 @@ namespace ChromiumBrowser
         private void btnForward_Click(object sender, EventArgs e)
         {
             chromiumBrowser = BrowserTabs.SelectedTab.Controls.OfType<ChromiumWebBrowser>().FirstOrDefault();
-            if (chromiumBrowser.CanGoForward)
+            if (chromiumBrowser != null)
             {
-                chromiumBrowser.Forward();
+                if (chromiumBrowser.CanGoForward)
+                {
+                    chromiumBrowser.Forward();
+                }
             }
         }
-        private void SearchBarKeyDown(object sender, KeyEventArgs e)
+        private void SearchBarKeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
@@ -103,7 +118,20 @@ namespace ChromiumBrowser
                 if (tabPage.Text == "History")
                 {
                     chromiumBrowser = new ChromiumWebBrowser();
-                    chromiumBrowser.AddressChanged += OnBrowserAddressChanged;
+                    chromiumBrowser.TitleChanged += ChromiumBrowser_TitleChanged;
+                    chromiumBrowser.FrameLoadEnd += browser_FrameLoadEnd;
+                    chromiumBrowser.Dock = DockStyle.Fill;
+
+                    while (tabPage.Controls.Count > 0)
+                    {
+                        Control control = tabPage.Controls[0];
+                        tabPage.Controls.Remove(control);
+                    }
+                    tabPage.Controls.Add(chromiumBrowser);
+                }
+                if (tabPage.Text.StartsWith("Tab"))
+                {
+                    chromiumBrowser = new ChromiumWebBrowser();
                     chromiumBrowser.FrameLoadEnd += browser_FrameLoadEnd;
                     chromiumBrowser.Dock = DockStyle.Fill;
 
@@ -115,7 +143,8 @@ namespace ChromiumBrowser
                     tabPage.Controls.Add(chromiumBrowser);
                 }
 
-                SearchAdress(chromiumBrowser);            }
+                SearchAdress(chromiumBrowser, Address.Text);
+            }
         }
 
         private void SearchAdress(ChromiumWebBrowser browser)
@@ -128,9 +157,12 @@ namespace ChromiumBrowser
 
             if (Rgx.IsMatch(Address.Text))
             {
-                browser.Load(Address.Text);
-            }
-            else
+                if (visitedPagesList.Last().Item1 != tuple.Item1 && !incognitoModeOn)
+                {
+                    if (!incognitoModeOn) { visitedPagesList.Add(tuple); }
+                }
+            } 
+            catch (Exception)
             {
                 browser.Load("https://www.google.com/search?q=" + Address.Text.Replace(" ", "+"));
             }
@@ -303,17 +335,16 @@ namespace ChromiumBrowser
         }
 
         TabPage page;
+        Image image;
+        List<System.Windows.Forms.TextBox> textBoxes = new List<System.Windows.Forms.TextBox>();
+        ChromiumWebBrowser chromiumWebBrowser;
         private void CreateNewTab(string url)
         {
             page = new TabPage();
 
-            ChromiumWebBrowser chromiumWebBrowser = new ChromiumWebBrowser();
-
-            if (url != null) { chromiumWebBrowser.Load(url); }
-            else { chromiumWebBrowser.Load("google.com"); }
-
+            chromiumWebBrowser = new ChromiumWebBrowser();
+            chromiumWebBrowser.TitleChanged += ChromiumBrowser_TitleChanged;
             chromiumWebBrowser.FrameLoadEnd += browser_FrameLoadEnd;
-            chromiumWebBrowser.AddressChanged += OnBrowserAddressChanged;
             chromiumWebBrowser.Dock = DockStyle.Fill;
 
             page.Text = $"Tab {TabNum}";
@@ -322,7 +353,43 @@ namespace ChromiumBrowser
 
             page.Controls.Add(chromiumWebBrowser);
 
-            BrowserTabs.TabPages.Add(page);
+            txtbox.Name = "MainSearch";
+            txtbox.Text = "Search";
+            txtbox.Font = new Font("Arial", 50);
+
+
+            int pos = BrowserTabs.TabCount > 0 ? BrowserTabs.TabCount - 1 : 0;
+
+            if (pos > 0) { BrowserTabs.TabPages.Insert(pos, page); } else { BrowserTabs.TabPages.Add(page); }
+            chromiumWebBrowser.Focus();
+
+            txtbox.Width = 1500;
+            txtbox.Height = 70;
+
+            txtbox.AutoSize = false;
+
+            int x = (page.Size.Width - txtbox.Size.Width) / 2;
+            int y = (page.Size.Height - txtbox.Size.Height) / 2;
+
+            txtbox.Location = new Point(x, y);
+            this.Controls.Add(txtbox);
+
+            txtbox.Click += (s, args) =>
+            {
+                txtbox.Text = "";
+            };
+            txtbox.KeyDown += (s, e) =>
+            {
+                if (e.KeyCode == Keys.Enter)
+                {
+                    page.Controls.Add(chromiumWebBrowser);
+                    SearchAdress(chromiumWebBrowser, txtbox.Text);
+                    page.Controls.Remove(txtbox);
+                    mainPages.Remove(page);
+                    textBoxes.Remove(txtbox);
+                }
+            };
+            page.Controls.Add(txtbox);
         }
 
         private void browser_FrameLoadEnd(object sender, FrameLoadEndEventArgs e)
@@ -335,29 +402,29 @@ namespace ChromiumBrowser
 
                 this.Invoke(new Action(() =>
                 {
-                    BrowserTabs.SelectedTab.Text = domainName;
+                    if (BrowserTabs.SelectedTab.Text == "History") { return; }
+                    BrowserTabs.SelectedTab.Text = title;
+                    
+                    try
+                    {
+                        iconUrl = new Uri("https://" + new Uri(url).Host + "/favicon.ico");
+
+                        stream = client.OpenRead(iconUrl);
+                        Bitmap bmp = new Bitmap(stream);
+
+                        BrowserTabs.ImageList.Images.Add(bmp);
+                        int imageIndex = BrowserTabs.ImageList.Images.Count-1;
+                        BrowserTabs.SelectedTab.ImageIndex = BrowserTabs.ImageList.Images.Count - 1;
+                        tabImageIndex[BrowserTabs.SelectedTab] = imageIndex;
+
+                        BrowserTabs.Invalidate();
+                    }
+                    catch (Exception)
+                    {
+                        tabImageIndex[BrowserTabs.SelectedTab] = 0;
+                        BrowserTabs.SelectedTab.ImageIndex = 0;
+                    }
                 }));
-
-            }
-        }
-
-        private string GetDomainName(string url)
-        {
-            //Uri uri = new Uri(url);
-            //string host = uri.Host;
-            bool page_safe = url.Contains("https:");
-            bool page_unsafe = url.Contains("http:");
-            string domain_name = null;
-            if (page_safe)
-            {
-                //s.Substring(url + 2)
-                domain_name = url.Substring(12); //this is how many characters are in "https://www."
-                domain_name = domain_name.Substring(0, domain_name.IndexOf("/")); //cuts the end off
-            }
-            else if (page_unsafe)
-            {
-                domain_name = url.Substring(11); //this is how many characters are in "http://www."
-                domain_name = domain_name.Substring(0, domain_name.IndexOf("/")); //cuts the end off
             }
             return domain_name;
         }
@@ -395,18 +462,27 @@ namespace ChromiumBrowser
             changeControlColors();
         }
 
-        private void greenUpDown_ValueChanged(object sender, EventArgs e)
+        bool repeatingBg = true;
+        private void ToggleRepeatingBg(object sender, EventArgs e)
         {
-            greenVal = (byte)greenUpDown.Value;
-            changeControlColors();
+            repeatingBg = !repeatingBg;
+            radioButton1.Checked = repeatingBg;
+
+            foreach(TabPage page in mainPages)
+            {
+                page.BackgroundImage = image;
+                if (repeatingBg) 
+                { 
+                    page.BackgroundImageLayout = ImageLayout.Tile; 
+                } 
+                else 
+                { 
+                    page.BackgroundImageLayout = ImageLayout.Stretch; 
+                }
+            }
         }
 
-        private void blueUpDown_ValueChanged(object sender, EventArgs e)
-        {
-            blueVal = (byte)blueUpDown.Value;
-            changeControlColors();
-        }
-
+        System.Drawing.Color color, txtColor, borderColor = new System.Drawing.Color();
         private void changeControlColors()
         {
             Color color = Color.FromArgb(redVal, greenVal, blueVal);
@@ -416,6 +492,14 @@ namespace ChromiumBrowser
             BrowserTabs.BackColor = color;
         }
 
+        private void backGroundNumericChange(object sender, EventArgs e)
+        {
+            redVal = (byte)redUpDown.Value;
+            greenVal = (byte)greenUpDown.Value;
+            blueVal = (byte)blueUpDown.Value;
+
+            changeControlColors();
+        }
     }
 }
 
