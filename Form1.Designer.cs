@@ -129,7 +129,7 @@
             this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton1.Name = "toolStripButton1";
             this.toolStripButton1.Size = new System.Drawing.Size(38, 45);
-            this.toolStripButton1.Text = "♺";
+            this.toolStripButton1.Text = "↻";
             this.toolStripButton1.Click += new System.EventHandler(this.reloadButton_Click);
             // 
             // Address
@@ -138,10 +138,25 @@
             this.Address.Font = new System.Drawing.Font("Segoe UI", 18F);
             this.Address.Margin = new System.Windows.Forms.Padding(0);
             this.Address.Name = "Address";
-            this.Address.Size = new System.Drawing.Size(400, 50);
+            this.Address.Size = new System.Drawing.Size(400, 55);
             this.Address.Text = "Search";
             this.Address.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SearchBarKeyDown);
             this.Address.Click += new System.EventHandler(this.Address_Click);
+            // 
+            // settingsBtn
+            // 
+            this.settingsBtn.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.settingsBtn.AutoSize = false;
+            this.settingsBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.settingsBtn.Font = new System.Drawing.Font("Segoe UI", 15F);
+            this.settingsBtn.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.settingsBtn.Image = ((System.Drawing.Image)(resources.GetObject("settingsBtn.Image")));
+            this.settingsBtn.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.settingsBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.settingsBtn.Name = "settingsBtn";
+            this.settingsBtn.Size = new System.Drawing.Size(40, 45);
+            this.settingsBtn.Text = "⚙";
+            this.settingsBtn.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // settingsBtn
             // 
@@ -422,6 +437,7 @@
             this.Controls.Add(this.panel);
             this.Controls.Add(this.BrowserTabs);
             this.Controls.Add(this.ToolStrip);
+            this.DoubleBuffered = true;
             this.Name = "Browser";
             this.Text = "Browser";
             this.Resize += new System.EventHandler(this.BrowserResize);
