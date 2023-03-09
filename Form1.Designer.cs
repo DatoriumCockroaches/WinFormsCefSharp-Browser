@@ -35,14 +35,20 @@
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.Address = new System.Windows.Forms.ToolStripTextBox();
-            this.AddBrowserTab = new System.Windows.Forms.ToolStripButton();
-            this.removeBrowserTab = new System.Windows.Forms.ToolStripButton();
             this.settingsBtn = new System.Windows.Forms.ToolStripButton();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.BrowserTabs = new System.Windows.Forms.TabControl();
             this.panel = new System.Windows.Forms.Panel();
-            this.toggleRepeat = new System.Windows.Forms.RadioButton();
-            this.button2 = new System.Windows.Forms.Button();
+            this.txtUpDownBlue = new System.Windows.Forms.NumericUpDown();
+            this.txtUpDownGreen = new System.Windows.Forms.NumericUpDown();
+            this.txtUpDownRed = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.borderBlueUpDown = new System.Windows.Forms.NumericUpDown();
+            this.borderGreenUpDown = new System.Windows.Forms.NumericUpDown();
+            this.borderRedUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.button1 = new System.Windows.Forms.Button();
             this.historyBtn = new System.Windows.Forms.Button();
             this.blueUpDown = new System.Windows.Forms.NumericUpDown();
@@ -53,6 +59,14 @@
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.ToolStrip.SuspendLayout();
             this.panel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtUpDownBlue)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtUpDownGreen)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtUpDownRed)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.borderBlueUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.borderGreenUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.borderRedUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.blueUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.greenUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.redUpDown)).BeginInit();
@@ -68,13 +82,11 @@
             this.toolStripButton2,
             this.toolStripButton1,
             this.Address,
-            this.AddBrowserTab,
-            this.removeBrowserTab,
             this.settingsBtn});
             this.ToolStrip.Location = new System.Drawing.Point(0, 0);
             this.ToolStrip.Name = "ToolStrip";
             this.ToolStrip.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
-            this.ToolStrip.Size = new System.Drawing.Size(800, 55);
+            this.ToolStrip.Size = new System.Drawing.Size(800, 50);
             this.ToolStrip.TabIndex = 1;
             this.ToolStrip.Text = "toolStrip1";
             // 
@@ -131,31 +143,20 @@
             this.Address.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SearchBarKeyDown);
             this.Address.Click += new System.EventHandler(this.Address_Click);
             // 
-            // AddBrowserTab
+            // settingsBtn
             // 
-            this.AddBrowserTab.AutoSize = false;
-            this.AddBrowserTab.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.AddBrowserTab.Font = new System.Drawing.Font("Segoe UI", 17F);
-            this.AddBrowserTab.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.AddBrowserTab.Image = ((System.Drawing.Image)(resources.GetObject("AddBrowserTab.Image")));
-            this.AddBrowserTab.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.AddBrowserTab.Name = "AddBrowserTab";
-            this.AddBrowserTab.Size = new System.Drawing.Size(40, 45);
-            this.AddBrowserTab.Text = "+";
-            this.AddBrowserTab.Click += new System.EventHandler(this.AddBrowserTab_Click);
-            // 
-            // removeBrowserTab
-            // 
-            this.removeBrowserTab.AutoSize = false;
-            this.removeBrowserTab.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.removeBrowserTab.Font = new System.Drawing.Font("Segoe UI", 17F);
-            this.removeBrowserTab.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.removeBrowserTab.Image = ((System.Drawing.Image)(resources.GetObject("removeBrowserTab.Image")));
-            this.removeBrowserTab.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.removeBrowserTab.Name = "removeBrowserTab";
-            this.removeBrowserTab.Size = new System.Drawing.Size(40, 50);
-            this.removeBrowserTab.Text = "-";
-            this.removeBrowserTab.Click += new System.EventHandler(this.removeBrowserTab_Click);
+            this.settingsBtn.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.settingsBtn.AutoSize = false;
+            this.settingsBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.settingsBtn.Font = new System.Drawing.Font("Segoe UI", 15F);
+            this.settingsBtn.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.settingsBtn.Image = ((System.Drawing.Image)(resources.GetObject("settingsBtn.Image")));
+            this.settingsBtn.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.settingsBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.settingsBtn.Name = "settingsBtn";
+            this.settingsBtn.Size = new System.Drawing.Size(40, 45);
+            this.settingsBtn.Text = "⚙";
+            this.settingsBtn.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // settingsBtn
             // 
@@ -181,18 +182,32 @@
             // BrowserTabs
             // 
             this.BrowserTabs.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
+            this.BrowserTabs.AllowDrop = true;
             this.BrowserTabs.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.BrowserTabs.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.BrowserTabs.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F);
-            this.BrowserTabs.Location = new System.Drawing.Point(0, 55);
+            this.BrowserTabs.Location = new System.Drawing.Point(0, 50);
             this.BrowserTabs.Name = "BrowserTabs";
             this.BrowserTabs.SelectedIndex = 0;
-            this.BrowserTabs.Size = new System.Drawing.Size(800, 694);
+            this.BrowserTabs.Size = new System.Drawing.Size(800, 1413);
             this.BrowserTabs.TabIndex = 2;
+            this.BrowserTabs.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.TabControl_DrawItem);
+            this.BrowserTabs.SelectedIndexChanged += new System.EventHandler(this.BrowserTabs_SelectedIndexChanged);
+            this.BrowserTabs.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TabControl_MouseDown);
+            this.BrowserTabs.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TabControl_MouseUp);
             // 
             // panel
             // 
-            this.panel.Controls.Add(this.toggleRepeat);
-            this.panel.Controls.Add(this.button2);
+            this.panel.Controls.Add(this.txtUpDownBlue);
+            this.panel.Controls.Add(this.txtUpDownGreen);
+            this.panel.Controls.Add(this.txtUpDownRed);
+            this.panel.Controls.Add(this.label3);
+            this.panel.Controls.Add(this.pictureBox2);
+            this.panel.Controls.Add(this.borderBlueUpDown);
+            this.panel.Controls.Add(this.borderGreenUpDown);
+            this.panel.Controls.Add(this.borderRedUpDown);
+            this.panel.Controls.Add(this.label2);
+            this.panel.Controls.Add(this.pictureBox1);
             this.panel.Controls.Add(this.button1);
             this.panel.Controls.Add(this.historyBtn);
             this.panel.Controls.Add(this.blueUpDown);
@@ -201,40 +216,140 @@
             this.panel.Controls.Add(this.label1);
             this.panel.Controls.Add(this.colorBox);
             this.panel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel.Location = new System.Drawing.Point(400, 55);
+            this.panel.Location = new System.Drawing.Point(400, 50);
             this.panel.MaximumSize = new System.Drawing.Size(400, 0);
             this.panel.Name = "panel";
-            this.panel.Size = new System.Drawing.Size(400, 694);
+            this.panel.Size = new System.Drawing.Size(400, 1413);
             this.panel.TabIndex = 3;
             // 
-            // toggleRepeat
+            // txtUpDownBlue
             // 
-            this.toggleRepeat.AutoSize = true;
-            this.toggleRepeat.Checked = true;
-            this.toggleRepeat.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F);
-            this.toggleRepeat.Location = new System.Drawing.Point(10, 517);
-            this.toggleRepeat.Name = "toggleRepeat";
-            this.toggleRepeat.Size = new System.Drawing.Size(369, 34);
-            this.toggleRepeat.TabIndex = 9;
-            this.toggleRepeat.TabStop = true;
-            this.toggleRepeat.Text = "Toggle repeating background";
-            this.toggleRepeat.UseVisualStyleBackColor = true;
-            this.toggleRepeat.Click += new System.EventHandler(this.ToggleRepeatingBg);
+            this.txtUpDownBlue.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.txtUpDownBlue.Location = new System.Drawing.Point(270, 822);
+            this.txtUpDownBlue.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.txtUpDownBlue.Name = "txtUpDownBlue";
+            this.txtUpDownBlue.Size = new System.Drawing.Size(120, 39);
+            this.txtUpDownBlue.TabIndex = 17;
+            this.txtUpDownBlue.ValueChanged += new System.EventHandler(this.txtValChanged);
             // 
-            // button2
+            // txtUpDownGreen
             // 
-            this.button2.Location = new System.Drawing.Point(10, 440);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(378, 57);
-            this.button2.TabIndex = 8;
-            this.button2.Text = "Change background";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.changeBg_BtnClick);
+            this.txtUpDownGreen.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.txtUpDownGreen.Location = new System.Drawing.Point(140, 822);
+            this.txtUpDownGreen.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.txtUpDownGreen.Name = "txtUpDownGreen";
+            this.txtUpDownGreen.Size = new System.Drawing.Size(120, 39);
+            this.txtUpDownGreen.TabIndex = 16;
+            this.txtUpDownGreen.ValueChanged += new System.EventHandler(this.txtValChanged);
+            // 
+            // txtUpDownRed
+            // 
+            this.txtUpDownRed.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.txtUpDownRed.Location = new System.Drawing.Point(10, 822);
+            this.txtUpDownRed.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.txtUpDownRed.Name = "txtUpDownRed";
+            this.txtUpDownRed.Size = new System.Drawing.Size(120, 39);
+            this.txtUpDownRed.TabIndex = 15;
+            this.txtUpDownRed.ValueChanged += new System.EventHandler(this.txtValChanged);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F);
+            this.label3.Location = new System.Drawing.Point(4, 596);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(146, 36);
+            this.label3.TabIndex = 14;
+            this.label3.Text = "Text color";
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.BackColor = System.Drawing.Color.White;
+            this.pictureBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox2.Location = new System.Drawing.Point(10, 634);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(380, 165);
+            this.pictureBox2.TabIndex = 13;
+            this.pictureBox2.TabStop = false;
+            // 
+            // borderBlueUpDown
+            // 
+            this.borderBlueUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.borderBlueUpDown.Location = new System.Drawing.Point(270, 542);
+            this.borderBlueUpDown.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.borderBlueUpDown.Name = "borderBlueUpDown";
+            this.borderBlueUpDown.Size = new System.Drawing.Size(120, 39);
+            this.borderBlueUpDown.TabIndex = 12;
+            this.borderBlueUpDown.ValueChanged += new System.EventHandler(this.borderValChanged);
+            // 
+            // borderGreenUpDown
+            // 
+            this.borderGreenUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.borderGreenUpDown.Location = new System.Drawing.Point(140, 542);
+            this.borderGreenUpDown.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.borderGreenUpDown.Name = "borderGreenUpDown";
+            this.borderGreenUpDown.Size = new System.Drawing.Size(120, 39);
+            this.borderGreenUpDown.TabIndex = 11;
+            this.borderGreenUpDown.ValueChanged += new System.EventHandler(this.borderValChanged);
+            // 
+            // borderRedUpDown
+            // 
+            this.borderRedUpDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.borderRedUpDown.Location = new System.Drawing.Point(10, 542);
+            this.borderRedUpDown.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.borderRedUpDown.Name = "borderRedUpDown";
+            this.borderRedUpDown.Size = new System.Drawing.Size(120, 39);
+            this.borderRedUpDown.TabIndex = 10;
+            this.borderRedUpDown.ValueChanged += new System.EventHandler(this.borderValChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F);
+            this.label2.Location = new System.Drawing.Point(4, 316);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(179, 36);
+            this.label2.TabIndex = 9;
+            this.label2.Text = "Border color";
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BackColor = System.Drawing.Color.White;
+            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox1.Location = new System.Drawing.Point(10, 354);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(380, 165);
+            this.pictureBox1.TabIndex = 8;
+            this.pictureBox1.TabStop = false;
             // 
             // button1
             // 
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.button1.Location = new System.Drawing.Point(10, 369);
+            this.button1.Location = new System.Drawing.Point(10, 966);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(378, 65);
             this.button1.TabIndex = 7;
@@ -244,7 +359,7 @@
             // 
             // historyBtn
             // 
-            this.historyBtn.Location = new System.Drawing.Point(10, 322);
+            this.historyBtn.Location = new System.Drawing.Point(10, 919);
             this.historyBtn.Name = "historyBtn";
             this.historyBtn.Size = new System.Drawing.Size(378, 43);
             this.historyBtn.TabIndex = 5;
@@ -264,7 +379,7 @@
             this.blueUpDown.Name = "blueUpDown";
             this.blueUpDown.Size = new System.Drawing.Size(120, 39);
             this.blueUpDown.TabIndex = 4;
-            this.blueUpDown.ValueChanged += new System.EventHandler(this.blueUpDown_ValueChanged);
+            this.blueUpDown.ValueChanged += new System.EventHandler(this.backGroundNumericChange);
             // 
             // greenUpDown
             // 
@@ -278,7 +393,7 @@
             this.greenUpDown.Name = "greenUpDown";
             this.greenUpDown.Size = new System.Drawing.Size(120, 39);
             this.greenUpDown.TabIndex = 3;
-            this.greenUpDown.ValueChanged += new System.EventHandler(this.greenUpDown_ValueChanged);
+            this.greenUpDown.ValueChanged += new System.EventHandler(this.backGroundNumericChange);
             // 
             // redUpDown
             // 
@@ -292,7 +407,7 @@
             this.redUpDown.Name = "redUpDown";
             this.redUpDown.Size = new System.Drawing.Size(120, 39);
             this.redUpDown.TabIndex = 2;
-            this.redUpDown.ValueChanged += new System.EventHandler(this.redUpDown_ValueChanged);
+            this.redUpDown.ValueChanged += new System.EventHandler(this.backGroundNumericChange);
             // 
             // label1
             // 
@@ -307,6 +422,7 @@
             // colorBox
             // 
             this.colorBox.BackColor = System.Drawing.Color.White;
+            this.colorBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.colorBox.Location = new System.Drawing.Point(10, 66);
             this.colorBox.Name = "colorBox";
             this.colorBox.Size = new System.Drawing.Size(380, 165);
@@ -317,7 +433,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 749);
+            this.ClientSize = new System.Drawing.Size(800, 1463);
             this.Controls.Add(this.panel);
             this.Controls.Add(this.BrowserTabs);
             this.Controls.Add(this.ToolStrip);
@@ -329,6 +445,14 @@
             this.ToolStrip.PerformLayout();
             this.panel.ResumeLayout(false);
             this.panel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtUpDownBlue)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtUpDownGreen)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtUpDownRed)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.borderBlueUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.borderGreenUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.borderRedUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.blueUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.greenUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.redUpDown)).EndInit();
@@ -342,15 +466,8 @@
         private System.Windows.Forms.ToolStrip ToolStrip;
         private System.Windows.Forms.ToolStripTextBox Address;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.ToolStripButton AddBrowserTab;
         private System.Windows.Forms.TabControl BrowserTabs;
-        private System.Windows.Forms.ToolStripButton removeBrowserTab;
         private System.Windows.Forms.Panel panel;
-        private System.Windows.Forms.PictureBox colorBox;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.NumericUpDown blueUpDown;
-        private System.Windows.Forms.NumericUpDown greenUpDown;
-        private System.Windows.Forms.NumericUpDown redUpDown;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.Button historyBtn;
         private System.Windows.Forms.Button button1;
@@ -358,8 +475,21 @@
         private System.Windows.Forms.ToolStripButton toolStripButton3;
         private System.Windows.Forms.ToolStripButton toolStripButton2;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.RadioButton toggleRepeat;
+        private System.Windows.Forms.NumericUpDown txtUpDownBlue;
+        private System.Windows.Forms.NumericUpDown txtUpDownGreen;
+        private System.Windows.Forms.NumericUpDown txtUpDownRed;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.NumericUpDown borderBlueUpDown;
+        private System.Windows.Forms.NumericUpDown borderGreenUpDown;
+        private System.Windows.Forms.NumericUpDown borderRedUpDown;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.NumericUpDown blueUpDown;
+        private System.Windows.Forms.NumericUpDown greenUpDown;
+        private System.Windows.Forms.NumericUpDown redUpDown;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.PictureBox colorBox;
     }
 }
 
