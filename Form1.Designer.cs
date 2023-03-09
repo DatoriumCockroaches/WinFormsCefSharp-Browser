@@ -88,7 +88,7 @@
             this.ToolStrip.Location = new System.Drawing.Point(0, 0);
             this.ToolStrip.Name = "ToolStrip";
             this.ToolStrip.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
-            this.ToolStrip.Size = new System.Drawing.Size(800, 55);
+            this.ToolStrip.Size = new System.Drawing.Size(800, 50);
             this.ToolStrip.TabIndex = 1;
             this.ToolStrip.Text = "toolStrip1";
             // 
@@ -173,7 +173,7 @@
             this.BrowserTabs.Dock = System.Windows.Forms.DockStyle.Fill;
             this.BrowserTabs.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.BrowserTabs.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F);
-            this.BrowserTabs.Location = new System.Drawing.Point(0, 55);
+            this.BrowserTabs.Location = new System.Drawing.Point(0, 50);
             this.BrowserTabs.Name = "BrowserTabs";
             this.BrowserTabs.SelectedIndex = 0;
             this.BrowserTabs.Size = new System.Drawing.Size(800, 1408);
@@ -204,7 +204,7 @@
             this.panel.Controls.Add(this.label1);
             this.panel.Controls.Add(this.colorBox);
             this.panel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel.Location = new System.Drawing.Point(400, 55);
+            this.panel.Location = new System.Drawing.Point(400, 50);
             this.panel.MaximumSize = new System.Drawing.Size(400, 0);
             this.panel.Name = "panel";
             this.panel.Size = new System.Drawing.Size(400, 1408);

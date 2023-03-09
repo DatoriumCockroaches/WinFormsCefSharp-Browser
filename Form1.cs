@@ -75,7 +75,7 @@ namespace ChromiumBrowser
         }
 
         public void InitializeBrowser()
-        {
+        { 
             var settings = new CefSettings();
             Cef.Initialize(settings);
 
@@ -83,6 +83,9 @@ namespace ChromiumBrowser
             BrowserTabs.ItemSize = new Size(200, 28);
 
             CreateMainPage();
+            PlusPage.Text = "+";
+            BrowserTabs.Controls.Add(PlusPage);
+            BrowserTabs.Click += BrowserTabs_Click;
             PlusPage.Text = "+";
             BrowserTabs.Controls.Add(PlusPage);
             BrowserTabs.Click += BrowserTabs_Click;
@@ -393,6 +396,19 @@ namespace ChromiumBrowser
                 pictureBox.Size = new Size(25, 25);
                 pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
 
+                try
+                {
+                    iconUrl = new Uri("https://" + new Uri(tuple.Item2).Host + "/favicon.ico");
+                    stream = client.OpenRead(iconUrl);
+                    img = new Bitmap(stream);
+                } catch (Exception)
+                {
+                    img = Resources.chromium.ToBitmap();
+                }
+                pictureBox.Image = img;
+                pictureBox.Size = new Size(25, 25);
+                pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+
                 btn.Location = new Point(10, labelY);
 
                 pictureBox.Location = new Point(60, labelY);
@@ -422,6 +438,7 @@ namespace ChromiumBrowser
                 BrowserTabs.TabPages[BrowserTabs.TabPages.IndexOf(page)].Controls.Add(pictureBox);
 
 
+
                 labelY = urlLabel.Bottom + 5;
             }
 
@@ -446,6 +463,8 @@ namespace ChromiumBrowser
             crWebBrowser.TitleChanged += ChromiumBrowser_TitleChanged;
             crWebBrowser.FrameLoadEnd += browser_FrameLoadEnd;
             crWebBrowser.Dock = DockStyle.Fill;
+
+            drawBackground(page);
 
             drawBackground(page);
 
@@ -507,6 +526,34 @@ namespace ChromiumBrowser
             {
                 page.BackgroundImageLayout = ImageLayout.Stretch;
             }
+
+            txtbox.Width = 1500;
+            txtbox.Height = 70;
+
+            txtbox.AutoSize = false;
+
+            int x = (page.Size.Width - txtbox.Size.Width) / 2;
+            int y = (page.Size.Height - txtbox.Size.Height) / 2;
+
+            txtbox.Location = new Point(x, y);
+            this.Controls.Add(txtbox);
+
+            txtbox.Click += (s, args) =>
+            {
+                txtbox.Text = "";
+            };
+            txtbox.KeyDown += (s, e) =>
+            {
+                if (e.KeyCode == Keys.Enter)
+                {
+                    page.Controls.Add(chromiumWebBrowser);
+                    SearchAdress(chromiumWebBrowser, txtbox.Text);
+                    page.Controls.Remove(txtbox);
+                    mainPages.Remove(page);
+                    textBoxes.Remove(txtbox);
+                }
+            };
+            page.Controls.Add(txtbox);
         }
 
         WebClient client = new WebClient();
@@ -521,6 +568,8 @@ namespace ChromiumBrowser
                 ChromiumWebBrowser browser = (ChromiumWebBrowser)sender;
 
                 string url = browser.Address;
+
+                string url = chromiumWebBrowser.Address;
 
                 this.Invoke(new Action(() =>
                 {
