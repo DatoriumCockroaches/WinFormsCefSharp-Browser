@@ -20,6 +20,7 @@ using System.Reflection.Emit;
 using CefSharp.DevTools.DOMSnapshot;
 using CefSharp.DevTools.Browser;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace ChromiumBrowser
 {
@@ -27,7 +28,7 @@ namespace ChromiumBrowser
     public partial class Browser : Form
     {
         ChromiumWebBrowser chromiumBrowser = null;
-        List<ChromiumWebBrowser> chromiumBrowsers = new List<ChromiumWebBrowser>();
+        List<TabPage> mainPages = new List<TabPage>();
       
         List<string> visitedPages = new List<string>();
         int TabNum = 1;
@@ -40,6 +41,8 @@ namespace ChromiumBrowser
             mainDir = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName((new System.Uri(Assembly.GetEntryAssembly().CodeBase)).AbsolutePath)));
             bgPath = Path.Combine(mainDir, "\\Resources\\bg5.jfif");
 
+            image = Image.FromFile(mainDir + bgPath);
+
             InitializeComponent();
             InitializeBrowser();
             panel.Width = 0;
@@ -47,12 +50,10 @@ namespace ChromiumBrowser
             this.Text = "Cockroach Browser";
             this.Icon = Resources.chromium;
             this.Update();
-
-            image = Image.FromFile(mainDir + bgPath);
         }
 
         public void InitializeBrowser()
-        {
+        { 
             var settings = new CefSettings();
             Cef.Initialize(settings);
 
@@ -72,8 +73,13 @@ namespace ChromiumBrowser
                 if (item is ToolStripButton) { continue; }
                 totalWidth += item.Width;
             }
+            foreach(System.Windows.Forms.TextBox txtBox in textBoxes)
+            {
+                txtBox.Location = new Point((Width - txtBox.Width)/2, (Height-txtBox.Height)/2);
+            }
 
         }
+
 
         private void btnBack_Click(object sender, EventArgs e)
         {
@@ -330,34 +336,39 @@ namespace ChromiumBrowser
 
         TabPage page;
         Image image;
+        List<System.Windows.Forms.TextBox> textBoxes = new List<System.Windows.Forms.TextBox>();
         private void CreateNewTab(string url)
         {
             page = new TabPage();
+            mainPages.Add(page);
 
             ChromiumWebBrowser chromiumWebBrowser = new ChromiumWebBrowser();
 
             chromiumWebBrowser.Dock = DockStyle.Fill;
 
-            page.BackgroundImage = image;
-            if (repeatingBg) { page.BackgroundImageLayout = ImageLayout.Tile; } else { page.BackgroundImageLayout = ImageLayout.Zoom; }
-            page.BackgroundImageLayout = ImageLayout.Tile;
+            drawBackground(page);
 
             page.Text = $"Tab {TabNum}";
 
             TabNum = TabNum+=1;
             
             System.Windows.Forms.TextBox txtbox = new System.Windows.Forms.TextBox();
+            textBoxes.Add(txtbox);
+
             txtbox.Name = "MainSearch";
             txtbox.Text = "Search";
+            txtbox.Font = new Font("Arial", 50);
 
             BrowserTabs.TabPages.Add(page);
 
-            txtbox.Width = 50;
-            txtbox.Height = 30;
-            txtbox.Anchor = (AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top);
+            txtbox.Width = 1500;
+            txtbox.Height = 70;
+
             txtbox.AutoSize = false;
+
             int x = (page.Size.Width - txtbox.Size.Width) / 2;
             int y = (page.Size.Height - txtbox.Size.Height) / 2;
+
             txtbox.Location = new Point(x, y);
 
             txtbox.Click += (s, args) =>
@@ -371,10 +382,24 @@ namespace ChromiumBrowser
                     page.Controls.Add(chromiumWebBrowser);
                     SearchAdress(chromiumWebBrowser, txtbox.Text);
                     page.Controls.Remove(txtbox);
+                    mainPages.Remove(page);
+                    textBoxes.Remove(txtbox);
                 }
             };
             page.Controls.Add(txtbox);
+        }
 
+        private void drawBackground(TabPage page)
+        {
+            page.BackgroundImage = image;
+            if (repeatingBg) 
+            {
+                page.BackgroundImageLayout = ImageLayout.Tile; 
+            } 
+            else 
+            { 
+                page.BackgroundImageLayout = ImageLayout.Stretch; 
+            }
         }
 
         private void MainSearchBarKeyDown(object sender, KeyEventArgs e)
@@ -441,14 +466,11 @@ namespace ChromiumBrowser
 
         private string GetDomainName(string url)
         {
-            //Uri uri = new Uri(url);
-            //string host = uri.Host;
             bool page_safe = url.Contains("https:");
             bool page_unsafe = url.Contains("http:");
             string domain_name = null;
             if (page_safe)
             {
-                //s.Substring(url + 2)
                 domain_name = url.Substring(12); //this is how many characters are in "https://www."
                 domain_name = domain_name.Substring(0, domain_name.IndexOf("/")); //cuts the end off
             }
@@ -500,8 +522,10 @@ namespace ChromiumBrowser
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 image = new Bitmap(dialog.FileName);
-                page.BackgroundImage = image;
-
+                foreach(TabPage page in mainPages)
+                {
+                    drawBackground(page);
+                }
             }
             else
             {
@@ -514,6 +538,20 @@ namespace ChromiumBrowser
         private void ToggleRepeatingBg(object sender, EventArgs e)
         {
             repeatingBg = !repeatingBg;
+            toggleRepeat.Checked = repeatingBg;
+
+            foreach(TabPage page in mainPages)
+            {
+                page.BackgroundImage = image;
+                if (repeatingBg) 
+                { 
+                    page.BackgroundImageLayout = ImageLayout.Tile; 
+                } 
+                else 
+                { 
+                    page.BackgroundImageLayout = ImageLayout.Stretch; 
+                }
+            }
         }
 
         private void blueUpDown_ValueChanged(object sender, EventArgs e)
@@ -531,6 +569,31 @@ namespace ChromiumBrowser
             BrowserTabs.BackColor = color;
         }
 
+    }
+
+    public static class ControlHelper
+    {
+        #region Redraw Suspend/Resume
+        [DllImport("user32.dll", EntryPoint = "SendMessageA", ExactSpelling = true, CharSet = CharSet.Ansi, SetLastError = true)]
+        private static extern int SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);
+        private const int WM_SETREDRAW = 0xB;
+
+        public static void SuspendDrawing(this Control target)
+        {
+            SendMessage(target.Handle, WM_SETREDRAW, 0, 0);
+        }
+
+        public static void ResumeDrawing(this Control target) { ResumeDrawing(target, true); }
+        public static void ResumeDrawing(this Control target, bool redraw)
+        {
+            SendMessage(target.Handle, WM_SETREDRAW, 1, 0);
+
+            if (redraw)
+            {
+                target.Refresh();
+            }
+        }
+        #endregion
     }
 }
 

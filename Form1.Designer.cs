@@ -41,6 +41,8 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.BrowserTabs = new System.Windows.Forms.TabControl();
             this.panel = new System.Windows.Forms.Panel();
+            this.toggleRepeat = new System.Windows.Forms.RadioButton();
+            this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.historyBtn = new System.Windows.Forms.Button();
             this.blueUpDown = new System.Windows.Forms.NumericUpDown();
@@ -49,8 +51,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.colorBox = new System.Windows.Forms.PictureBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.button2 = new System.Windows.Forms.Button();
-            this.toggleRepeat = new System.Windows.Forms.RadioButton();
             this.ToolStrip.SuspendLayout();
             this.panel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.blueUpDown)).BeginInit();
@@ -207,6 +207,30 @@
             this.panel.Size = new System.Drawing.Size(400, 694);
             this.panel.TabIndex = 3;
             // 
+            // toggleRepeat
+            // 
+            this.toggleRepeat.AutoSize = true;
+            this.toggleRepeat.Checked = true;
+            this.toggleRepeat.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F);
+            this.toggleRepeat.Location = new System.Drawing.Point(10, 517);
+            this.toggleRepeat.Name = "toggleRepeat";
+            this.toggleRepeat.Size = new System.Drawing.Size(369, 34);
+            this.toggleRepeat.TabIndex = 9;
+            this.toggleRepeat.TabStop = true;
+            this.toggleRepeat.Text = "Toggle repeating background";
+            this.toggleRepeat.UseVisualStyleBackColor = true;
+            this.toggleRepeat.Click += new System.EventHandler(this.ToggleRepeatingBg);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(10, 440);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(378, 57);
+            this.button2.TabIndex = 8;
+            this.button2.Text = "Change background";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.changeBg_BtnClick);
+            // 
             // button1
             // 
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
@@ -289,30 +313,6 @@
             this.colorBox.TabIndex = 0;
             this.colorBox.TabStop = false;
             // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(10, 440);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(378, 57);
-            this.button2.TabIndex = 8;
-            this.button2.Text = "Change background";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.changeBg_BtnClick);
-            // 
-            // toggleRepeat
-            // 
-            this.toggleRepeat.AutoSize = true;
-            this.toggleRepeat.Checked = true;
-            this.toggleRepeat.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F);
-            this.toggleRepeat.Location = new System.Drawing.Point(10, 517);
-            this.toggleRepeat.Name = "toggleRepeat";
-            this.toggleRepeat.Size = new System.Drawing.Size(369, 34);
-            this.toggleRepeat.TabIndex = 9;
-            this.toggleRepeat.TabStop = true;
-            this.toggleRepeat.Text = "Toggle repeating background";
-            this.toggleRepeat.UseVisualStyleBackColor = true;
-            this.toggleRepeat.Click += new System.EventHandler(this.ToggleRepeatingBg);
-            // 
             // Browser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -321,6 +321,7 @@
             this.Controls.Add(this.panel);
             this.Controls.Add(this.BrowserTabs);
             this.Controls.Add(this.ToolStrip);
+            this.DoubleBuffered = true;
             this.Name = "Browser";
             this.Text = "Browser";
             this.Resize += new System.EventHandler(this.BrowserResize);
