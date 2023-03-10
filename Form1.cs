@@ -24,7 +24,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Windows.Input;
 using System.Runtime.CompilerServices;
-using System.Windows.Media;
+using System.Reflection;
 
 namespace ChromiumBrowser
 {
@@ -32,9 +32,9 @@ namespace ChromiumBrowser
     public partial class Browser : Form
     {
         ChromiumWebBrowser chromiumBrowser = null;
-        List<ChromiumWebBrowser> chromiumBrowsers = new List<ChromiumWebBrowser>();
 
         List<Tuple<string, string>> visitedPagesList = new List<Tuple<string, string>>();
+        List<TabPage> mainPages = new List<TabPage>();
 
         ImageList imgList = new ImageList();
 
@@ -46,17 +46,17 @@ namespace ChromiumBrowser
 
         public Browser()
         {
-            mainDir = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName((new System.Uri(Assembly.GetEntryAssembly().CodeBase)).AbsolutePath)));
-            bgPath = Path.Combine(mainDir, "\\Resources\\bg5.jfif");
-
-            image = Image.FromFile(mainDir + bgPath);
-
             InitializeComponent();
+            mainDir = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName((new System.Uri(Assembly.GetEntryAssembly().CodeBase)).AbsolutePath)));
+            bgPath = Path.Combine(mainDir, "\\Resources\\Bg1.jpg");
+
+            image = new Bitmap(mainDir + bgPath);
+
             InitializeBrowser();
             panel.Width = 0;
 
             BrowserTabs.ImageList = imgList;
-            imgList.Images.Add(Properties.Resources.settings);
+            BrowserTabs.ImageList.Images.Add(Resources.chromium.ToBitmap());
             imgList.ImageSize = new Size(30, 30);
 
             this.Text = "Cockroach Browser";
@@ -81,7 +81,7 @@ namespace ChromiumBrowser
             BrowserTabs.SizeMode = TabSizeMode.Fixed;
             BrowserTabs.ItemSize = new Size(200, 28);
 
-            CreateNewTab("google.com");
+            CreateMainPage();
             PlusPage.Text = "+";
             BrowserTabs.Controls.Add(PlusPage);
             BrowserTabs.Click += BrowserTabs_Click;
@@ -91,7 +91,7 @@ namespace ChromiumBrowser
         {
             if (BrowserTabs.SelectedTab == PlusPage)
             {
-                CreateNewTab("google.com");
+                CreateMainPage();
             }
         }
 
@@ -105,9 +105,9 @@ namespace ChromiumBrowser
                 if (item is ToolStripButton) { continue; }
                 totalWidth += item.Width;
             }
-            foreach(System.Windows.Forms.TextBox txtBox in textBoxes)
+            foreach (System.Windows.Forms.TextBox txtBox in textBoxes)
             {
-                txtBox.Location = new Point((Width - txtBox.Width)/2, (Height-txtBox.Height)/2);
+                txtBox.Location = new Point((Width - txtBox.Width) / 2, (Height - txtBox.Height) / 2);
             }
 
         }
@@ -136,7 +136,7 @@ namespace ChromiumBrowser
                 }
             }
         }
-        private void SearchBarKeyDown(object sender, KeyEventArgs e)
+        private void SearchBarKeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
@@ -154,6 +154,7 @@ namespace ChromiumBrowser
                     chromiumBrowser = new ChromiumWebBrowser();
                     chromiumBrowser.TitleChanged += ChromiumBrowser_TitleChanged;
                     chromiumBrowser.FrameLoadEnd += browser_FrameLoadEnd;
+
                     chromiumBrowser.Dock = DockStyle.Fill;
 
                     while (tabPage.Controls.Count > 0)
@@ -162,48 +163,80 @@ namespace ChromiumBrowser
                         tabPage.Controls.Remove(control);
                     }
                     tabPage.Controls.Add(chromiumBrowser);
+                    return;
                 }
-                if (tabPage.Text.StartsWith("Tab"))
+
+                chromiumBrowser = new ChromiumWebBrowser();
+                chromiumBrowser.FrameLoadEnd += browser_FrameLoadEnd;
+                chromiumBrowser.TitleChanged += ChromiumBrowser_TitleChanged;
+                chromiumBrowser.Dock = DockStyle.Fill;
+                SearchAdress(chromiumBrowser, Address.Text);
+
+                while (tabPage.Controls.Count > 0)
                 {
-                    chromiumBrowser = new ChromiumWebBrowser();
-                    chromiumBrowser.AddressChanged += OnBrowserAddressChanged;
-                    chromiumBrowser.FrameLoadEnd += browser_FrameLoadEnd;
-                    chromiumBrowser.Dock = DockStyle.Fill;
-
-                    while (tabPage.Controls.Count > 0)
-                    {
-                        Control control = tabPage.Controls[0];
-                        tabPage.Controls.Remove(control);
-                    }
-                    tabPage.Controls.Add(chromiumBrowser);
+                    Control control = tabPage.Controls[0];
+                    tabPage.Controls.Remove(control);
                 }
+                tabPage.Controls.Add(chromiumBrowser);
 
-                SearchAdress(chromiumBrowser);
+                if (Rgx.IsMatch(Address.Text))
+                {
+                    chromiumBrowser.Load(Address.Text);
+                }
+                else
+                {
+                    chromiumBrowser.Load("https://www.google.com/search?q=" + Address.Text.Replace(" ", "+"));
+                }
             }
+        }
+
+        TabPage page;
+        ChromiumWebBrowser chromiumWebBrowser;
+        private void CreateNewTab(string url)
+        {
+            page = new TabPage();
+            BrowserTabs.SelectedTab = page;
+
+            chromiumWebBrowser = new ChromiumWebBrowser();
+
+            if (url != null) { chromiumWebBrowser.Load(url); }
+            else { chromiumWebBrowser.Load("google.com"); }
+
+            chromiumWebBrowser.FrameLoadEnd += browser_FrameLoadEnd;
+            chromiumWebBrowser.TitleChanged += ChromiumBrowser_TitleChanged;
+            chromiumWebBrowser.Dock = DockStyle.Fill;
+
+            page.Text = $"Tab {TabNum}";
+
+            TabNum = TabNum += 1;
+
+            page.Controls.Add(chromiumWebBrowser);
+
+            int pos = BrowserTabs.TabCount > 0 ? BrowserTabs.TabCount - 1 : 0;
+
+            if (pos > 0) { BrowserTabs.TabPages.Insert(pos, page); } else { BrowserTabs.TabPages.Add(page); }
+            chromiumWebBrowser.Focus();
         }
 
         string title;
         private void ChromiumBrowser_TitleChanged(object sender, TitleChangedEventArgs e)
         {
             title = e.Title;
-            var tuple = new Tuple<string, string>(e.Title, chromiumWebBrowser.Address);
-            try
+            var browser = (ChromiumWebBrowser)sender;
+            var tuple = new Tuple<string, string>(e.Title, browser.Address);
+
+            if (visitedPagesList.Count < 2) { visitedPagesList.Add(tuple); return; }
+
+            if (visitedPagesList.Last().Item1 != tuple.Item1 && !incognitoModeOn)
             {
-                if (visitedPagesList.Last().Item1 != tuple.Item1)
-                {
-                    visitedPagesList.Add(tuple);
-                }
-            } 
-            catch (Exception)
-            {
-                //null list
                 visitedPagesList.Add(tuple);
             }
+
         }
 
         private void SearchAdress(ChromiumWebBrowser browser, string url)
         {
-            if (url == null) { return; } 
+            if (url == null) { return; }
 
             string Pattern = @"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$";
             Regex Rgx = new Regex(Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -255,7 +288,6 @@ namespace ChromiumBrowser
         }
 
         int labelY;
-
         System.Windows.Forms.Button removeAll;
         System.Windows.Forms.Button removeSelected;
         private void historyBtn_Click(object sender, EventArgs e)
@@ -349,6 +381,20 @@ namespace ChromiumBrowser
                     iconUrl = new Uri("https://" + new Uri(tuple.Item2).Host + "/favicon.ico");
                     stream = client.OpenRead(iconUrl);
                     img = new Bitmap(stream);
+                }
+                catch (Exception)
+                {
+                    img = Resources.chromium.ToBitmap();
+                }
+                pictureBox.Image = img;
+                pictureBox.Size = new Size(25, 25);
+                pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+
+                try
+                {
+                    iconUrl = new Uri("https://" + new Uri(tuple.Item2).Host + "/favicon.ico");
+                    stream = client.OpenRead(iconUrl);
+                    img = new Bitmap(stream);
                 } catch (Exception)
                 {
                     img = Resources.chromium.ToBitmap();
@@ -386,6 +432,7 @@ namespace ChromiumBrowser
                 BrowserTabs.TabPages[BrowserTabs.TabPages.IndexOf(page)].Controls.Add(pictureBox);
 
 
+
                 labelY = urlLabel.Bottom + 5;
             }
 
@@ -397,24 +444,28 @@ namespace ChromiumBrowser
             return labelY;
         }
 
-        TabPage page;
         Image image;
         List<System.Windows.Forms.TextBox> textBoxes = new List<System.Windows.Forms.TextBox>();
-        private void CreateNewTab(string url)
+        private void CreateMainPage()
         {
-            page = new TabPage();
+            TabPage page = new TabPage();
             mainPages.Add(page);
 
-            chromiumWebBrowser = new ChromiumWebBrowser();
+            BrowserTabs.SelectedTab = page;
 
-            chromiumWebBrowser.Dock = DockStyle.Fill;
+            ChromiumWebBrowser crWebBrowser = new ChromiumWebBrowser();
+            crWebBrowser.TitleChanged += ChromiumBrowser_TitleChanged;
+            crWebBrowser.FrameLoadEnd += browser_FrameLoadEnd;
+            crWebBrowser.Dock = DockStyle.Fill;
+
+            drawBackground(page);
 
             drawBackground(page);
 
             page.Text = $"Tab {TabNum}";
 
-            TabNum = TabNum+=1;
-            
+            TabNum = TabNum += 1;
+
             System.Windows.Forms.TextBox txtbox = new System.Windows.Forms.TextBox();
             textBoxes.Add(txtbox);
 
@@ -422,7 +473,10 @@ namespace ChromiumBrowser
             txtbox.Text = "Search";
             txtbox.Font = new Font("Arial", 50);
 
-            BrowserTabs.TabPages.Add(page);
+            int pos = BrowserTabs.TabCount > 0 ? BrowserTabs.TabCount - 1 : 0;
+
+            if (pos > 0) { BrowserTabs.TabPages.Insert(pos, page); } else { BrowserTabs.TabPages.Add(page); }
+            crWebBrowser.Focus();
 
             txtbox.Width = 1500;
             txtbox.Height = 70;
@@ -443,8 +497,10 @@ namespace ChromiumBrowser
             {
                 if (e.KeyCode == Keys.Enter)
                 {
-                    page.Controls.Add(chromiumWebBrowser);
-                    SearchAdress(chromiumWebBrowser, txtbox.Text);
+                    chromiumWebBrowser = crWebBrowser;
+                    SearchAdress(crWebBrowser, txtbox.Text);
+                    page.Controls.Add(crWebBrowser);
+
                     page.Controls.Remove(txtbox);
                     mainPages.Remove(page);
                     textBoxes.Remove(txtbox);
@@ -456,13 +512,13 @@ namespace ChromiumBrowser
         private void drawBackground(TabPage page)
         {
             page.BackgroundImage = image;
-            if (repeatingBg) 
+            if (repeatingBg)
             {
-                page.BackgroundImageLayout = ImageLayout.Tile; 
-            } 
-            else 
-            { 
-                page.BackgroundImageLayout = ImageLayout.Stretch; 
+                page.BackgroundImageLayout = ImageLayout.Tile;
+            }
+            else
+            {
+                page.BackgroundImageLayout = ImageLayout.Stretch;
             }
         }
 
@@ -477,12 +533,13 @@ namespace ChromiumBrowser
             {
                 ChromiumWebBrowser browser = (ChromiumWebBrowser)sender;
 
-                string url = chromiumWebBrowser.Address;
+                string url = browser.Address;
 
                 this.Invoke(new Action(() =>
                 {
+                    if (BrowserTabs.SelectedTab.Text == "History") { return; }
                     BrowserTabs.SelectedTab.Text = title;
-                    
+                    chromiumWebBrowser = browser;
                     try
                     {
                         iconUrl = new Uri("https://" + new Uri(url).Host + "/favicon.ico");
@@ -491,7 +548,7 @@ namespace ChromiumBrowser
                         Bitmap bmp = new Bitmap(stream);
 
                         BrowserTabs.ImageList.Images.Add(bmp);
-                        int imageIndex = BrowserTabs.ImageList.Images.Count-1;
+                        int imageIndex = BrowserTabs.ImageList.Images.Count - 1;
                         BrowserTabs.SelectedTab.ImageIndex = BrowserTabs.ImageList.Images.Count - 1;
                         tabImageIndex[BrowserTabs.SelectedTab] = imageIndex;
 
@@ -506,13 +563,13 @@ namespace ChromiumBrowser
             }
         }
 
-      
+
         bool incognitoModeOn = false;
 
         private void button1_Click(object sender, EventArgs e)
         {
             incognitoModeOn = !incognitoModeOn;
-            if (incognitoModeOn == true)
+            if (incognitoModeOn)
             {
                 button1.BackColor = System.Drawing.Color.Green;
             }
@@ -527,12 +584,13 @@ namespace ChromiumBrowser
             Address.Text = "";
         }
 
-        private void BrowserTabs_SelectedIndexChanged(object sender, EventArgs e)
+        private void backGroundNumericChange(object sender, EventArgs e)
         {
-            if (BrowserTabs.SelectedIndex == BrowserTabs.TabPages.Count - 1)
-            {
-                CreateNewTab("google.com");
-            }
+            redVal = (byte)redUpDown.Value;
+            greenVal = (byte)greenUpDown.Value;
+            blueVal = (byte)blueUpDown.Value;
+
+            changeControlColors();
         }
 
         TabPage GetPageByPoint(TabControl tabControl, Point point)
@@ -609,7 +667,6 @@ namespace ChromiumBrowser
 
 
         SolidBrush backBrush, borderBrush, txtBrush;
-
         private void TabControl_DrawItem(object sender, DrawItemEventArgs e)
         {
             if (e.Index >= 0 && e.Index < BrowserTabs.TabCount)
@@ -634,7 +691,7 @@ namespace ChromiumBrowser
                             e.Graphics.DrawImage(BrowserTabs.ImageList.Images[imageIndex], imageBounds);
                         }
                     }
-                } 
+                }
                 catch (Exception)
                 {
                     BrowserTabs.ImageList.Images.Add(Resources.chromium);
@@ -662,7 +719,7 @@ namespace ChromiumBrowser
                 if (e.Index < this.BrowserTabs.TabCount - 1)
                 {
                     // Draw the rectangle behind the X
-                    Rectangle rect = new Rectangle(e.Bounds.Right - 30, e.Bounds.Y/2, 30, tabPageBounds.Height);
+                    Rectangle rect = new Rectangle(e.Bounds.Right - 30, e.Bounds.Y / 2, 30, tabPageBounds.Height);
                     e.Graphics.FillRectangle(backBrush, rect);
 
                     // Draw the X
@@ -702,7 +759,7 @@ namespace ChromiumBrowser
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 image = new Bitmap(dialog.FileName);
-                foreach(TabPage page in mainPages)
+                foreach (TabPage page in mainPages)
                 {
                     drawBackground(page);
                 }
@@ -718,29 +775,20 @@ namespace ChromiumBrowser
         private void ToggleRepeatingBg(object sender, EventArgs e)
         {
             repeatingBg = !repeatingBg;
-            toggleRepeat.Checked = repeatingBg;
+            toggleBg.Checked = repeatingBg;
 
-            foreach(TabPage page in mainPages)
+            foreach (TabPage page in mainPages)
             {
                 page.BackgroundImage = image;
-                if (repeatingBg) 
-                { 
-                    page.BackgroundImageLayout = ImageLayout.Tile; 
-                } 
-                else 
-                { 
-                    page.BackgroundImageLayout = ImageLayout.Stretch; 
+                if (repeatingBg)
+                {
+                    page.BackgroundImageLayout = ImageLayout.Tile;
+                }
+                else
+                {
+                    page.BackgroundImageLayout = ImageLayout.Stretch;
                 }
             }
-        }
-
-        private void blueUpDown_ValueChanged(object sender, EventArgs e)
-        {
-            redVal = (byte)redUpDown.Value;
-            greenVal = (byte)greenUpDown.Value;
-            blueVal = (byte)blueUpDown.Value;
-
-            changeControlColors();
         }
 
         System.Drawing.Color color, txtColor, borderColor = new System.Drawing.Color();
@@ -790,4 +838,3 @@ namespace ChromiumBrowser
 
     }
 }
-

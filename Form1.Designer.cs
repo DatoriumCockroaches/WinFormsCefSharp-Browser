@@ -39,6 +39,8 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.BrowserTabs = new System.Windows.Forms.TabControl();
             this.panel = new System.Windows.Forms.Panel();
+            this.button2 = new System.Windows.Forms.Button();
+            this.toggleBg = new System.Windows.Forms.RadioButton();
             this.txtUpDownBlue = new System.Windows.Forms.NumericUpDown();
             this.txtUpDownGreen = new System.Windows.Forms.NumericUpDown();
             this.txtUpDownRed = new System.Windows.Forms.NumericUpDown();
@@ -158,21 +160,6 @@
             this.settingsBtn.Text = "⚙";
             this.settingsBtn.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
-            // settingsBtn
-            // 
-            this.settingsBtn.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.settingsBtn.AutoSize = false;
-            this.settingsBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.settingsBtn.Font = new System.Drawing.Font("Segoe UI", 15F);
-            this.settingsBtn.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.settingsBtn.Image = ((System.Drawing.Image)(resources.GetObject("settingsBtn.Image")));
-            this.settingsBtn.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.settingsBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.settingsBtn.Name = "settingsBtn";
-            this.settingsBtn.Size = new System.Drawing.Size(40, 45);
-            this.settingsBtn.Text = "⚙";
-            this.settingsBtn.Click += new System.EventHandler(this.toolStripButton1_Click);
-            // 
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
@@ -189,15 +176,16 @@
             this.BrowserTabs.Location = new System.Drawing.Point(0, 50);
             this.BrowserTabs.Name = "BrowserTabs";
             this.BrowserTabs.SelectedIndex = 0;
-            this.BrowserTabs.Size = new System.Drawing.Size(800, 1413);
+            this.BrowserTabs.Size = new System.Drawing.Size(800, 1408);
             this.BrowserTabs.TabIndex = 2;
             this.BrowserTabs.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.TabControl_DrawItem);
-            this.BrowserTabs.SelectedIndexChanged += new System.EventHandler(this.BrowserTabs_SelectedIndexChanged);
             this.BrowserTabs.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TabControl_MouseDown);
             this.BrowserTabs.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TabControl_MouseUp);
             // 
             // panel
             // 
+            this.panel.Controls.Add(this.button2);
+            this.panel.Controls.Add(this.toggleBg);
             this.panel.Controls.Add(this.txtUpDownBlue);
             this.panel.Controls.Add(this.txtUpDownGreen);
             this.panel.Controls.Add(this.txtUpDownRed);
@@ -219,8 +207,32 @@
             this.panel.Location = new System.Drawing.Point(400, 50);
             this.panel.MaximumSize = new System.Drawing.Size(400, 0);
             this.panel.Name = "panel";
-            this.panel.Size = new System.Drawing.Size(400, 1413);
+            this.panel.Size = new System.Drawing.Size(400, 1408);
             this.panel.TabIndex = 3;
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(10, 1038);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(378, 69);
+            this.button2.TabIndex = 19;
+            this.button2.Text = "Change background";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.changeBg_BtnClick);
+            // 
+            // toggleBg
+            // 
+            this.toggleBg.AutoSize = true;
+            this.toggleBg.Checked = true;
+            this.toggleBg.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F);
+            this.toggleBg.Location = new System.Drawing.Point(10, 877);
+            this.toggleBg.Name = "toggleBg";
+            this.toggleBg.Size = new System.Drawing.Size(369, 34);
+            this.toggleBg.TabIndex = 18;
+            this.toggleBg.TabStop = true;
+            this.toggleBg.Text = "Toggle repeating background";
+            this.toggleBg.UseVisualStyleBackColor = true;
+            this.toggleBg.Click += new System.EventHandler(this.ToggleRepeatingBg);
             // 
             // txtUpDownBlue
             // 
@@ -490,6 +502,7 @@
         private System.Windows.Forms.NumericUpDown redUpDown;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.PictureBox colorBox;
+        private System.Windows.Forms.RadioButton toggleBg;
+        private System.Windows.Forms.Button button2;
     }
 }
-
