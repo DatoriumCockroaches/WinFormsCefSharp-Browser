@@ -288,7 +288,6 @@ namespace ChromiumBrowser
         }
 
         int labelY;
-
         System.Windows.Forms.Button removeAll;
         System.Windows.Forms.Button removeSelected;
         private void historyBtn_Click(object sender, EventArgs e)
