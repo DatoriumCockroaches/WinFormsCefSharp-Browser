@@ -59,6 +59,15 @@
             this.label1 = new System.Windows.Forms.Label();
             this.colorBox = new System.Windows.Forms.PictureBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.sidePanel = new System.Windows.Forms.Panel();
+            this.twitter = new System.Windows.Forms.PictureBox();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.instagram = new System.Windows.Forms.PictureBox();
+            this.tiktok = new System.Windows.Forms.PictureBox();
+            this.discord = new System.Windows.Forms.PictureBox();
+            this.youtube = new System.Windows.Forms.PictureBox();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.webPanel = new System.Windows.Forms.Panel();
             this.ToolStrip.SuspendLayout();
             this.panel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtUpDownBlue)).BeginInit();
@@ -73,6 +82,16 @@
             ((System.ComponentModel.ISupportInitialize)(this.greenUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.redUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.colorBox)).BeginInit();
+            this.sidePanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.twitter)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.instagram)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tiktok)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.discord)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.youtube)).BeginInit();
             this.SuspendLayout();
             // 
             // ToolStrip
@@ -88,7 +107,7 @@
             this.ToolStrip.Location = new System.Drawing.Point(0, 0);
             this.ToolStrip.Name = "ToolStrip";
             this.ToolStrip.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
-            this.ToolStrip.Size = new System.Drawing.Size(800, 50);
+            this.ToolStrip.Size = new System.Drawing.Size(1627, 55);
             this.ToolStrip.TabIndex = 1;
             this.ToolStrip.Text = "toolStrip1";
             // 
@@ -173,10 +192,10 @@
             this.BrowserTabs.Dock = System.Windows.Forms.DockStyle.Fill;
             this.BrowserTabs.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.BrowserTabs.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F);
-            this.BrowserTabs.Location = new System.Drawing.Point(0, 50);
+            this.BrowserTabs.Location = new System.Drawing.Point(0, 0);
             this.BrowserTabs.Name = "BrowserTabs";
             this.BrowserTabs.SelectedIndex = 0;
-            this.BrowserTabs.Size = new System.Drawing.Size(800, 1408);
+            this.BrowserTabs.Size = new System.Drawing.Size(1148, 1412);
             this.BrowserTabs.TabIndex = 2;
             this.BrowserTabs.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.TabControl_DrawItem);
             this.BrowserTabs.MouseDown += new System.Windows.Forms.MouseEventHandler(this.TabControl_MouseDown);
@@ -204,10 +223,10 @@
             this.panel.Controls.Add(this.label1);
             this.panel.Controls.Add(this.colorBox);
             this.panel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel.Location = new System.Drawing.Point(400, 50);
+            this.panel.Location = new System.Drawing.Point(1227, 55);
             this.panel.MaximumSize = new System.Drawing.Size(400, 0);
             this.panel.Name = "panel";
-            this.panel.Size = new System.Drawing.Size(400, 1408);
+            this.panel.Size = new System.Drawing.Size(400, 1412);
             this.panel.TabIndex = 3;
             // 
             // button2
@@ -441,13 +460,117 @@
             this.colorBox.TabIndex = 0;
             this.colorBox.TabStop = false;
             // 
+            // sidePanel
+            // 
+            this.sidePanel.Controls.Add(this.webPanel);
+            this.sidePanel.Controls.Add(this.youtube);
+            this.sidePanel.Controls.Add(this.discord);
+            this.sidePanel.Controls.Add(this.tiktok);
+            this.sidePanel.Controls.Add(this.instagram);
+            this.sidePanel.Controls.Add(this.twitter);
+            this.sidePanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.sidePanel.Location = new System.Drawing.Point(0, 0);
+            this.sidePanel.Name = "sidePanel";
+            this.sidePanel.Size = new System.Drawing.Size(75, 1412);
+            this.sidePanel.TabIndex = 4;
+            // 
+            // twitter
+            // 
+            this.twitter.Image = global::ChromiumBrowser.Properties.Resources.twitter;
+            this.twitter.Location = new System.Drawing.Point(15, 10);
+            this.twitter.Name = "twitter";
+            this.twitter.Size = new System.Drawing.Size(50, 50);
+            this.twitter.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.twitter.TabIndex = 0;
+            this.twitter.TabStop = false;
+            this.twitter.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SidePanel_MouseClick);
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.IsSplitterFixed = true;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 55);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.sidePanel);
+            this.splitContainer1.Panel1MinSize = 75;
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.BrowserTabs);
+            this.splitContainer1.Size = new System.Drawing.Size(1227, 1412);
+            this.splitContainer1.SplitterDistance = 75;
+            this.splitContainer1.TabIndex = 5;
+            // 
+            // instagram
+            // 
+            this.instagram.Image = global::ChromiumBrowser.Properties.Resources.instagram;
+            this.instagram.Location = new System.Drawing.Point(15, 120);
+            this.instagram.Name = "instagram";
+            this.instagram.Size = new System.Drawing.Size(50, 50);
+            this.instagram.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.instagram.TabIndex = 1;
+            this.instagram.TabStop = false;
+            this.instagram.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SidePanel_MouseClick);
+            // 
+            // tiktok
+            // 
+            this.tiktok.Image = global::ChromiumBrowser.Properties.Resources.tik_tok;
+            this.tiktok.Location = new System.Drawing.Point(15, 450);
+            this.tiktok.Name = "tiktok";
+            this.tiktok.Size = new System.Drawing.Size(50, 50);
+            this.tiktok.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.tiktok.TabIndex = 2;
+            this.tiktok.TabStop = false;
+            this.tiktok.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SidePanel_MouseClick);
+            // 
+            // discord
+            // 
+            this.discord.Image = global::ChromiumBrowser.Properties.Resources.discord;
+            this.discord.Location = new System.Drawing.Point(15, 230);
+            this.discord.Name = "discord";
+            this.discord.Size = new System.Drawing.Size(50, 50);
+            this.discord.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.discord.TabIndex = 3;
+            this.discord.TabStop = false;
+            this.discord.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SidePanel_MouseClick);
+            // 
+            // youtube
+            // 
+            this.youtube.Image = global::ChromiumBrowser.Properties.Resources.youtube;
+            this.youtube.Location = new System.Drawing.Point(15, 340);
+            this.youtube.Name = "youtube";
+            this.youtube.Size = new System.Drawing.Size(50, 50);
+            this.youtube.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.youtube.TabIndex = 4;
+            this.youtube.TabStop = false;
+            this.youtube.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SidePanel_MouseClick);
+            // 
+            // panel1
+            // 
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel1.Location = new System.Drawing.Point(0, 55);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(0, 1412);
+            this.panel1.TabIndex = 6;
+            // 
+            // webPanel
+            // 
+            this.webPanel.Location = new System.Drawing.Point(90, 10);
+            this.webPanel.Name = "webPanel";
+            this.webPanel.Size = new System.Drawing.Size(637, 1390);
+            this.webPanel.TabIndex = 5;
+            // 
             // Browser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 1463);
+            this.ClientSize = new System.Drawing.Size(1627, 1467);
+            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.panel);
-            this.Controls.Add(this.BrowserTabs);
             this.Controls.Add(this.ToolStrip);
             this.DoubleBuffered = true;
             this.Name = "Browser";
@@ -469,6 +592,16 @@
             ((System.ComponentModel.ISupportInitialize)(this.greenUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.redUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.colorBox)).EndInit();
+            this.sidePanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.twitter)).EndInit();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.instagram)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tiktok)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.discord)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.youtube)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -504,5 +637,14 @@
         private System.Windows.Forms.PictureBox colorBox;
         private System.Windows.Forms.RadioButton toggleBg;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Panel sidePanel;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.PictureBox twitter;
+        private System.Windows.Forms.PictureBox youtube;
+        private System.Windows.Forms.PictureBox discord;
+        private System.Windows.Forms.PictureBox tiktok;
+        private System.Windows.Forms.PictureBox instagram;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel webPanel;
     }
 }

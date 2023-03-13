@@ -148,6 +148,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="chromiumbrowser_94289.ico" />
+    <None Include="Resources\twitter.png" />
+    <None Include="Resources\tik-tok.png" />
+    <None Include="Resources\youtube.png" />
+    <None Include="Resources\instagram.png" />
+    <None Include="Resources\discord.png" />
     <None Include="Resources\Bg1.jpg" />
     <None Include="Resources\Bg2.jpg" />
     <None Include="Resources\11456891461558965378-128.png" />
