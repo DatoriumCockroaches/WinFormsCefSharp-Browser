@@ -25,6 +25,7 @@ using System.Diagnostics;
 using System.Windows.Input;
 using System.Runtime.CompilerServices;
 using System.Reflection;
+using System.Drawing.Printing;
 
 namespace ChromiumBrowser
 {
@@ -64,6 +65,7 @@ namespace ChromiumBrowser
             this.Update();
 
             InitializeControlProperties();
+            this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
         }
 
         private void InitializeControlProperties()
@@ -105,10 +107,12 @@ namespace ChromiumBrowser
 
         int totalWidth = 0;
 
+        List<Panel> panels = new List<Panel>();
         private void BrowserResize(object sender, EventArgs e)
         {
             splitContainer1.SplitterDistance = distance;
             totalWidth = 0;
+
             foreach (ToolStripItem item in ToolStrip.Items)
             {
                 if (item is ToolStripButton)
@@ -116,11 +120,18 @@ namespace ChromiumBrowser
                     totalWidth += item.Width;
                 }
             }
-            Address.Width = ToolStrip.Width -  totalWidth;
+            Address.Width = ToolStrip.Width -  totalWidth - 50;
+
             foreach (System.Windows.Forms.TextBox txtBox in textBoxes)
             {
                 txtBox.Location = new Point((Width - txtBox.Width) / 2, (Height - txtBox.Height) / 2);
             }
+
+            foreach(Panel panel in panels)
+            {
+                panel.Location = new Point((Width - panel.Width) / 2, (Height + panel.Height) / 2);
+            }
+
             webPanel.Size = new Size(sidePanel.Width - 75, sidePanel.Height);
         }
 
@@ -490,10 +501,12 @@ namespace ChromiumBrowser
             if (pos > 0) { BrowserTabs.TabPages.Insert(pos, page); } else { BrowserTabs.TabPages.Add(page); }
             crWebBrowser.Focus();
 
-            txtbox.Width = 1500;
+            txtbox.Width = Convert.ToInt32(0.6*Screen.PrimaryScreen.Bounds.Width);
             txtbox.Height = 70;
 
             txtbox.AutoSize = false;
+
+            createShortcuts(page, txtbox);
 
             int x = (page.Size.Width - txtbox.Size.Width) / 2;
             int y = (page.Size.Height - txtbox.Size.Height) / 2;
@@ -520,6 +533,74 @@ namespace ChromiumBrowser
             };
             page.Controls.Add(txtbox);
         }
+
+        Dictionary<string, Bitmap> websiteIcons = new Dictionary<string, Bitmap>()
+        {
+            { "youtube", new Bitmap(Resources.youtube) },
+            { "twitter", new Bitmap(Resources.twitter) },
+            { "facebook", new Bitmap(Resources.facebook) },
+            { "instagram", new Bitmap(Resources.instagram) },
+            { "linkedin", new Bitmap(Resources.linkedin) },
+            { "reddit", new Bitmap(Resources.reddit) },
+            { "pinterest", new Bitmap(Resources.pinterest) },
+            { "twitch", new Bitmap(Resources.twitch) }
+        };
+
+        private void createShortcuts(TabPage page, System.Windows.Forms.TextBox txtbox)
+        {
+            Panel panel = new Panel();
+            panel.BackColor = Color.Transparent;
+            panels.Add(panel);
+
+            panel.Width = Convert.ToInt32(0.6 * txtbox.Width);
+
+            int gapWidth = 30;
+            int iconWidth = (panel.Width - gapWidth*3) / 4;
+
+            panel.Height = Convert.ToInt32(iconWidth*1.5)+gapWidth;
+
+            int row = 0;
+            int col = 0;
+            foreach (var websiteIcon in websiteIcons)
+            {
+                PictureBox img = new PictureBox();
+                img.SizeMode = PictureBoxSizeMode.StretchImage;
+                img.Size = new Size(iconWidth, Convert.ToInt32(iconWidth*0.75));
+                img.Image = websiteIcon.Value;
+
+                img.Location = new Point(col * (iconWidth + gapWidth), row * (img.Size.Height + gapWidth));
+
+                string websiteUrl = $"https://www.{websiteIcon.Key}.com";
+                img.MouseClick += (sender, e) =>
+                {
+                    ChromiumWebBrowser crWebBrowser = new ChromiumWebBrowser();
+                    crWebBrowser.TitleChanged += ChromiumBrowser_TitleChanged;
+                    crWebBrowser.FrameLoadEnd += browser_FrameLoadEnd;
+                    crWebBrowser.Dock = DockStyle.Fill;
+                    chromiumWebBrowser = crWebBrowser;
+                    SearchAdress(crWebBrowser, websiteUrl);
+                    page.Controls.Add(crWebBrowser);
+
+                    page.Controls.Remove(txtbox);
+                    page.Controls.Remove(panel);
+                    mainPages.Remove(page);
+                    textBoxes.Remove(txtbox);
+                    panels.Remove(panel);
+                };
+
+                panel.Controls.Add(img);
+
+                col++;
+                if (col == 4)
+                {
+                    col = 0;
+                    row++;
+                }
+            }
+
+            page.Controls.Add(panel);
+        }
+
 
         private void drawBackground(TabPage page)
         {
@@ -844,6 +925,7 @@ namespace ChromiumBrowser
             Address.BackColor = color;
             BrowserTabs.BackColor = color;
             colorBox.BackColor = color;
+            sidePanel.BackColor = color;
 
             backBrush = new SolidBrush(color);
 
