@@ -63,7 +63,11 @@ namespace ChromiumBrowser
             this.Icon = Resources.chromium;
             this.Update();
 
+            InitializeControlProperties();
+        }
 
+        private void InitializeControlProperties()
+        {
             color = System.Drawing.Color.White;
             txtColor = System.Drawing.Color.Black;
             borderColor = System.Drawing.Color.White;
@@ -71,6 +75,10 @@ namespace ChromiumBrowser
             backBrush = new SolidBrush(color);
             borderBrush = new SolidBrush(borderColor);
             txtBrush = new SolidBrush(txtColor);
+
+            splitContainer1.SplitterDistance = 50;
+            webPanel.Controls.Add(sideBrowser);
+            webPanel.Location = new Point(75, 0);
         }
 
         public void InitializeBrowser()
@@ -99,17 +107,21 @@ namespace ChromiumBrowser
 
         private void BrowserResize(object sender, EventArgs e)
         {
+            splitContainer1.SplitterDistance = distance;
             totalWidth = 0;
             foreach (ToolStripItem item in ToolStrip.Items)
             {
-                if (item is ToolStripButton) { continue; }
-                totalWidth += item.Width;
+                if (item is ToolStripButton)
+                {
+                    totalWidth += item.Width;
+                }
             }
+            Address.Width = ToolStrip.Width -  totalWidth;
             foreach (System.Windows.Forms.TextBox txtBox in textBoxes)
             {
                 txtBox.Location = new Point((Width - txtBox.Width) / 2, (Height - txtBox.Height) / 2);
             }
-
+            webPanel.Size = new Size(sidePanel.Width - 75, sidePanel.Height);
         }
 
 
@@ -751,6 +763,37 @@ namespace ChromiumBrowser
             borderBlue = (byte)borderBlueUpDown.Value;
 
             changeBorderColor();
+        }
+
+        bool sidePanelOpened = false;
+        int distance = 75;
+        PictureBox prev;
+        ChromiumWebBrowser sideBrowser = new ChromiumWebBrowser();
+        private void SidePanel_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            PictureBox pcBox = (PictureBox)sender;
+
+            if (!sidePanelOpened || prev != pcBox)
+            {
+                prev = pcBox;
+             
+                sideBrowser.Load(pcBox.Name + ".com");
+                sideBrowser.Dock = DockStyle.Fill;
+
+                sidePanelOpened = true;
+                distance = 750;
+                webPanel.Size = new Size(distance-75, sidePanel.Height);
+
+            }
+            else
+            {
+                distance = 75;
+                sidePanel.Width = distance;
+                sidePanelOpened = false;
+                sideBrowser.LoadUrl(pcBox.Name + ".com");
+            }
+
+            splitContainer1.SplitterDistance = distance;
         }
 
         OpenFileDialog dialog = new OpenFileDialog();
