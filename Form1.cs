@@ -81,6 +81,8 @@ namespace ChromiumBrowser
             splitContainer1.SplitterDistance = 50;
             webPanel.Controls.Add(sideBrowser);
             webPanel.Location = new Point(75, 0);
+
+            
         }
 
         public void InitializeBrowser()
@@ -121,17 +123,6 @@ namespace ChromiumBrowser
                 }
             }
             Address.Width = ToolStrip.Width -  totalWidth - 50;
-
-            foreach (System.Windows.Forms.TextBox txtBox in textBoxes)
-            {
-                txtBox.Location = new Point((Width - txtBox.Width) / 2, (Height - txtBox.Height) / 2);
-            }
-
-            foreach(Panel panel in panels)
-            {
-                panel.Location = new Point((Width - panel.Width) / 2, (Height + panel.Height) / 2);
-            }
-
             webPanel.Size = new Size(sidePanel.Width - 75, sidePanel.Height);
         }
 
@@ -527,6 +518,7 @@ namespace ChromiumBrowser
                     page.Controls.Add(crWebBrowser);
 
                     page.Controls.Remove(txtbox);
+                    page.Controls.Remove(page.Controls.OfType<Panel>().First());
                     mainPages.Remove(page);
                     textBoxes.Remove(txtbox);
                 }
@@ -597,10 +589,9 @@ namespace ChromiumBrowser
                     row++;
                 }
             }
-
+            panel.Location = new Point((Width - panel.Width) / 2, (Height + panel.Height) / 2);
             page.Controls.Add(panel);
         }
-
 
         private void drawBackground(TabPage page)
         {
@@ -875,6 +866,19 @@ namespace ChromiumBrowser
             }
 
             splitContainer1.SplitterDistance = distance;
+        }
+
+        private void BrowserTabs_Resize(object sender, EventArgs e)
+        {
+            foreach (System.Windows.Forms.TextBox txtBox in textBoxes)
+            {
+                txtBox.Location = new Point((Width - txtBox.Width) / 2, (Height - txtBox.Height) / 2);
+            }
+
+            foreach (Panel panel in panels)
+            {
+                panel.Location = new Point((Width - panel.Width) / 2, (Height + panel.Height) / 2);
+            }
         }
 
         OpenFileDialog dialog = new OpenFileDialog();
