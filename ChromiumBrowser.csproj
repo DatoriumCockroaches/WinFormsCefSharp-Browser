@@ -148,9 +148,16 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="chromiumbrowser_94289.ico" />
-    <None Include="Resources\twitter.png" />
-    <None Include="Resources\tik-tok.png" />
+    <None Include="Resources\whatsapp.png" />
+    <None Include="Resources\spotify.png" />
     <None Include="Resources\youtube.png" />
+    <None Include="Resources\twitter.png" />
+    <None Include="Resources\pinterest.png" />
+    <None Include="Resources\facebook.png" />
+    <None Include="Resources\linkedin.png" />
+    <None Include="Resources\reddit.png" />
+    <None Include="Resources\twitch.png" />
+    <None Include="Resources\tik-tok.png" />
     <None Include="Resources\instagram.png" />
     <None Include="Resources\discord.png" />
     <None Include="Resources\Bg1.jpg" />
