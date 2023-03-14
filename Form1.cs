@@ -51,7 +51,8 @@ namespace ChromiumBrowser
             mainDir = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName((new System.Uri(Assembly.GetEntryAssembly().CodeBase)).AbsolutePath)));
             bgPath = Path.Combine(mainDir, "\\Resources\\Bg1.jpg");
 
-            image = new Bitmap(mainDir + bgPath);
+            Bitmap resizedImage = new Bitmap(mainDir + bgPath);
+            image = new Bitmap(resizedImage, resizedImage.Width, resizedImage.Height);
 
             InitializeBrowser();
             panel.Width = 0;
@@ -65,7 +66,7 @@ namespace ChromiumBrowser
             this.Update();
 
             InitializeControlProperties();
-            this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
+            this.DoubleBuffered = true;
         }
 
         private void InitializeControlProperties()
@@ -78,11 +79,23 @@ namespace ChromiumBrowser
             borderBrush = new SolidBrush(borderColor);
             txtBrush = new SolidBrush(txtColor);
 
-            splitContainer1.SplitterDistance = 50;
+            splitContainer1.SplitterDistance = 75;
             webPanel.Controls.Add(sideBrowser);
             webPanel.Location = new Point(75, 0);
 
-            
+            foreach (PictureBox img in sidePanel.Controls.OfType<PictureBox>())
+            {
+                img.Size = new Size(50, 50);
+                img.Location = new Point(15, img.Location.Y);
+            }
+
+            sideBrowser.AddressChanged += SideBrowser_AddressChanged;
+        }
+
+        string address;
+        private void SideBrowser_AddressChanged(object sender, AddressChangedEventArgs e)
+        {
+            address = e.Address;
         }
 
         public void InitializeBrowser()
@@ -122,8 +135,9 @@ namespace ChromiumBrowser
                     totalWidth += item.Width;
                 }
             }
-            Address.Width = ToolStrip.Width -  totalWidth - 50;
+            Address.Width = ToolStrip.Width - totalWidth - 50;
             webPanel.Size = new Size(sidePanel.Width - 75, sidePanel.Height);
+            splitContainer1.SplitterDistance = distance;
         }
 
 
@@ -177,6 +191,7 @@ namespace ChromiumBrowser
                         tabPage.Controls.Remove(control);
                     }
                     tabPage.Controls.Add(chromiumBrowser);
+                    tabPage.BackgroundImage = null;
                     return;
                 }
 
@@ -517,6 +532,7 @@ namespace ChromiumBrowser
                     SearchAdress(crWebBrowser, txtbox.Text);
                     page.Controls.Add(crWebBrowser);
 
+                    page.BackgroundImage = null;
                     page.Controls.Remove(txtbox);
                     page.Controls.Remove(page.Controls.OfType<Panel>().First());
                     mainPages.Remove(page);
@@ -572,6 +588,7 @@ namespace ChromiumBrowser
                     chromiumWebBrowser = crWebBrowser;
                     SearchAdress(crWebBrowser, websiteUrl);
                     page.Controls.Add(crWebBrowser);
+                    page.BackgroundImage = null;
 
                     page.Controls.Remove(txtbox);
                     page.Controls.Remove(panel);
@@ -847,22 +864,31 @@ namespace ChromiumBrowser
 
             if (!sidePanelOpened || prev != pcBox)
             {
+                if (prev == pcBox)
+                {
+                    sideBrowser.Load(address);
+                } 
+                else
+                {
+                    if (pcBox != whatsapp) { sideBrowser.Load($"{pcBox.Name}.com"); }
+                    else { sideBrowser.Load($"web.{pcBox.Name}.com"); }
+                }
                 prev = pcBox;
-             
-                sideBrowser.Load(pcBox.Name + ".com");
+
                 sideBrowser.Dock = DockStyle.Fill;
 
                 sidePanelOpened = true;
                 distance = 750;
                 webPanel.Size = new Size(distance-75, sidePanel.Height);
 
+                splitContainer1.IsSplitterFixed = false;
             }
             else
             {
                 distance = 75;
                 sidePanel.Width = distance;
                 sidePanelOpened = false;
-                sideBrowser.LoadUrl(pcBox.Name + ".com");
+                splitContainer1.IsSplitterFixed = true;
             }
 
             splitContainer1.SplitterDistance = distance;
@@ -870,6 +896,7 @@ namespace ChromiumBrowser
 
         private void BrowserTabs_Resize(object sender, EventArgs e)
         {
+            this.SuspendLayout();
             foreach (System.Windows.Forms.TextBox txtBox in textBoxes)
             {
                 txtBox.Location = new Point((Width - txtBox.Width) / 2, (Height - txtBox.Height) / 2);
@@ -879,6 +906,13 @@ namespace ChromiumBrowser
             {
                 panel.Location = new Point((Width - panel.Width) / 2, (Height + panel.Height) / 2);
             }
+            this.ResumeLayout();
+        }
+
+        private void SplitterMoved(object sender, SplitterEventArgs e)
+        {
+            if (!splitContainer1.IsSplitterFixed) { distance = splitContainer1.SplitterDistance; }
+            webPanel.Width = distance - 75;
         }
 
         OpenFileDialog dialog = new OpenFileDialog();
@@ -886,7 +920,8 @@ namespace ChromiumBrowser
         {
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                image = new Bitmap(dialog.FileName);
+                Bitmap resizedImage = new Bitmap(dialog.FileName);
+                image = new Bitmap(resizedImage, resizedImage.Width / 2, resizedImage.Height / 2);
                 foreach (TabPage page in mainPages)
                 {
                     drawBackground(page);

@@ -60,8 +60,9 @@
             this.colorBox = new System.Windows.Forms.PictureBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.sidePanel = new System.Windows.Forms.Panel();
+            this.spotify = new System.Windows.Forms.PictureBox();
             this.webPanel = new System.Windows.Forms.Panel();
-            this.youtube = new System.Windows.Forms.PictureBox();
+            this.whatsapp = new System.Windows.Forms.PictureBox();
             this.discord = new System.Windows.Forms.PictureBox();
             this.tiktok = new System.Windows.Forms.PictureBox();
             this.instagram = new System.Windows.Forms.PictureBox();
@@ -83,7 +84,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.redUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.colorBox)).BeginInit();
             this.sidePanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.youtube)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.spotify)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.whatsapp)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.discord)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tiktok)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.instagram)).BeginInit();
@@ -463,8 +465,9 @@
             // 
             // sidePanel
             // 
+            this.sidePanel.Controls.Add(this.spotify);
             this.sidePanel.Controls.Add(this.webPanel);
-            this.sidePanel.Controls.Add(this.youtube);
+            this.sidePanel.Controls.Add(this.whatsapp);
             this.sidePanel.Controls.Add(this.discord);
             this.sidePanel.Controls.Add(this.tiktok);
             this.sidePanel.Controls.Add(this.instagram);
@@ -475,6 +478,17 @@
             this.sidePanel.Size = new System.Drawing.Size(75, 1412);
             this.sidePanel.TabIndex = 4;
             // 
+            // spotify
+            // 
+            this.spotify.Image = global::ChromiumBrowser.Properties.Resources.spotify;
+            this.spotify.Location = new System.Drawing.Point(12, 681);
+            this.spotify.Name = "spotify";
+            this.spotify.Size = new System.Drawing.Size(50, 50);
+            this.spotify.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.spotify.TabIndex = 6;
+            this.spotify.TabStop = false;
+            this.spotify.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SidePanel_MouseClick);
+            // 
             // webPanel
             // 
             this.webPanel.Location = new System.Drawing.Point(90, 10);
@@ -482,16 +496,17 @@
             this.webPanel.Size = new System.Drawing.Size(637, 1390);
             this.webPanel.TabIndex = 5;
             // 
-            // youtube
+            // whatsapp
             // 
-            this.youtube.Image = ((System.Drawing.Image)(resources.GetObject("youtube.Image")));
-            this.youtube.Location = new System.Drawing.Point(15, 340);
-            this.youtube.Name = "youtube";
-            this.youtube.Size = new System.Drawing.Size(50, 50);
-            this.youtube.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.youtube.TabIndex = 4;
-            this.youtube.TabStop = false;
-            this.youtube.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SidePanel_MouseClick);
+            this.whatsapp.Image = global::ChromiumBrowser.Properties.Resources.whatsapp;
+            this.whatsapp.InitialImage = global::ChromiumBrowser.Properties.Resources.whatsapp;
+            this.whatsapp.Location = new System.Drawing.Point(15, 340);
+            this.whatsapp.Name = "whatsapp";
+            this.whatsapp.Size = new System.Drawing.Size(50, 50);
+            this.whatsapp.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.whatsapp.TabIndex = 4;
+            this.whatsapp.TabStop = false;
+            this.whatsapp.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SidePanel_MouseClick);
             // 
             // discord
             // 
@@ -555,6 +570,7 @@
             this.splitContainer1.Size = new System.Drawing.Size(1227, 1412);
             this.splitContainer1.SplitterDistance = 75;
             this.splitContainer1.TabIndex = 5;
+            this.splitContainer1.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.SplitterMoved);
             // 
             // panel1
             // 
@@ -594,7 +610,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.redUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.colorBox)).EndInit();
             this.sidePanel.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.youtube)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.spotify)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.whatsapp)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.discord)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tiktok)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.instagram)).EndInit();
@@ -641,11 +658,12 @@
         private System.Windows.Forms.Panel sidePanel;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.PictureBox twitter;
-        private System.Windows.Forms.PictureBox youtube;
+        private System.Windows.Forms.PictureBox whatsapp;
         private System.Windows.Forms.PictureBox discord;
         private System.Windows.Forms.PictureBox tiktok;
         private System.Windows.Forms.PictureBox instagram;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel webPanel;
+        private System.Windows.Forms.PictureBox spotify;
     }
 }

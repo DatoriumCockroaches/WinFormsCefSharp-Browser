@@ -148,6 +148,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="chromiumbrowser_94289.ico" />
+    <None Include="Resources\whatsapp.png" />
+    <None Include="Resources\spotify.png" />
     <None Include="Resources\youtube.png" />
     <None Include="Resources\twitter.png" />
     <None Include="Resources\pinterest.png" />
