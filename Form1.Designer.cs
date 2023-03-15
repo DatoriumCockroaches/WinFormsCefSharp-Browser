@@ -112,6 +112,7 @@
             this.ToolStrip.Size = new System.Drawing.Size(1627, 55);
             this.ToolStrip.TabIndex = 1;
             this.ToolStrip.Text = "toolStrip1";
+            this.ToolStrip.Paint += new System.Windows.Forms.PaintEventHandler(this.ToolStrip_Paint);
             // 
             // toolStripButton3
             // 
@@ -477,6 +478,7 @@
             this.sidePanel.Name = "sidePanel";
             this.sidePanel.Size = new System.Drawing.Size(75, 1412);
             this.sidePanel.TabIndex = 4;
+            this.sidePanel.Paint += new System.Windows.Forms.PaintEventHandler(this.SidePanel_Paint);
             // 
             // spotify
             // 
