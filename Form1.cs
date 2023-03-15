@@ -56,10 +56,10 @@ namespace ChromiumBrowser
             bgPath = Path.Combine(mainDir, "\\Resources\\Bg1.jpg");
 
             Bitmap resizedImage = new Bitmap(mainDir + bgPath);
-            image = new Bitmap(resizedImage, resizedImage.Width, resizedImage.Height);
+            image = new Bitmap(resizedImage, resizedImage.Width/2, resizedImage.Height/2);
 
             InitializeBrowser();
-            panel.Width = 0;
+            panel.Width = 0;    
 
             BrowserTabs.ImageList = imgList;
             BrowserTabs.ImageList.Images.Add(Resources.chromium.ToBitmap());
@@ -125,7 +125,7 @@ namespace ChromiumBrowser
             }
         }
 
-        int totalWidth = 0;
+        int totalWidth;
 
         List<Panel> panels = new List<Panel>();
         private void BrowserResize(object sender, EventArgs e)
