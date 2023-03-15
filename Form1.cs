@@ -834,21 +834,21 @@ namespace ChromiumBrowser
                     e.Graphics.DrawString("x", e.Font, txtBrush, xBounds);
                 }
 
-                //if (BrowserTabs.SelectedTab == BrowserTabs.TabPages[e.Index])
-                //{
-                //    //e.Graphics.DrawRectangle(new System.Drawing.Pen(borderColor, 5), e.Bounds);
+                if (BrowserTabs.SelectedTab == BrowserTabs.TabPages[e.Index])
+                {
+                    //e.Graphics.DrawRectangle(new System.Drawing.Pen(borderColor, 5), e.Bounds);
 
-                //    var tabRect = BrowserTabs.GetTabRect(e.Index);
+                    var tabRect = BrowserTabs.GetTabRect(e.Index);
 
-                //    var left = tabRect.Left;
-                //    var top = tabRect.Top;
-                //    var right = tabRect.Right;
-                //    var bottom = tabRect.Bottom;
+                    var left = tabRect.Left;
+                    var top = tabRect.Top;
+                    var right = tabRect.Right;
+                    var bottom = tabRect.Bottom;
 
-                //    e.Graphics.DrawLine(new System.Drawing.Pen(borderColor, 5), left, top, left, bottom);
-                //    e.Graphics.DrawLine(new System.Drawing.Pen(borderColor, 5), left, top, right, top);
-                //    e.Graphics.DrawLine(new System.Drawing.Pen(borderColor, 5), right, top, right, bottom);
-                //}
+                    e.Graphics.DrawLine(new System.Drawing.Pen(borderColor, 5), left, top, left, bottom);
+                    e.Graphics.DrawLine(new System.Drawing.Pen(borderColor, 5), left, top, right, top);
+                    e.Graphics.DrawLine(new System.Drawing.Pen(borderColor, 5), right, top, right, bottom);
+                }
             }
         }
 
@@ -935,42 +935,42 @@ namespace ChromiumBrowser
             webPanel.Width = distance - 75;
         }
 
-        //private void SidePanel_Paint(object sender, PaintEventArgs e)
-        //{
-        //    System.Drawing.Color topColor = borderColor;
-        //    System.Drawing.Color bottomColor = color;
+        private void SidePanel_Paint(object sender, PaintEventArgs e)
+        {
+            System.Drawing.Color topColor = borderColor;
+            System.Drawing.Color bottomColor = color;
 
-        //    // Define the gradient rectangle
-        //    Rectangle gradientRect = new Rectangle(
-        //        sidePanel.ClientRectangle.Right - 2,
-        //        sidePanel.ClientRectangle.Top,
-        //        2,
-        //        sidePanel.ClientRectangle.Height
-        //    );
+            // Define the gradient rectangle
+            Rectangle gradientRect = new Rectangle(
+                sidePanel.ClientRectangle.Right - 2,
+                sidePanel.ClientRectangle.Top,
+                2,
+                sidePanel.ClientRectangle.Height
+            );
 
-        //    // Define the gradient brush
-        //    System.Drawing.Drawing2D.LinearGradientBrush gradientBrush = new System.Drawing.Drawing2D.LinearGradientBrush(
-        //        gradientRect,
-        //        topColor,
-        //        bottomColor,
-        //        LinearGradientMode.Vertical
-        //    );
+            // Define the gradient brush
+            System.Drawing.Drawing2D.LinearGradientBrush gradientBrush = new System.Drawing.Drawing2D.LinearGradientBrush(
+                gradientRect,
+                topColor,
+                bottomColor,
+                LinearGradientMode.Vertical
+            );
 
-        //    // Define the border pens
-        //    System.Drawing.Pen borderPen = new System.Drawing.Pen(gradientBrush, 8);
+            // Define the border pens
+            System.Drawing.Pen borderPen = new System.Drawing.Pen(gradientBrush, 8);
 
-        //    e.Graphics.DrawLine(borderPen, sidePanel.ClientRectangle.Right - 2, sidePanel.ClientRectangle.Top, sidePanel.ClientRectangle.Right - 2, sidePanel.ClientRectangle.Bottom);
+            e.Graphics.DrawLine(borderPen, sidePanel.ClientRectangle.Right - 2, sidePanel.ClientRectangle.Top, sidePanel.ClientRectangle.Right - 2, sidePanel.ClientRectangle.Bottom);
 
-        //}
+        }
 
 
-        //private void ToolStrip_Paint(object sender, PaintEventArgs e)
-        //{
-        //    var bounds = ToolStrip.ClientRectangle.Bottom - 1;
-        //    // Draw the bottom border only
-        //    e.Graphics.DrawLine(new System.Drawing.Pen(borderColor, 8), 0, bounds, ToolStrip.ClientRectangle.Width, bounds);
-        //    ToolStrip.Invalidate();
-        //}
+        private void ToolStrip_Paint(object sender, PaintEventArgs e)
+        {
+            var bounds = ToolStrip.ClientRectangle.Bottom - 1;
+            // Draw the bottom border only
+            e.Graphics.DrawLine(new System.Drawing.Pen(borderColor, 8), 0, bounds, ToolStrip.ClientRectangle.Width, bounds);
+            ToolStrip.Invalidate();
+        }
 
         OpenFileDialog dialog = new OpenFileDialog();
         private void changeBg_BtnClick(object sender, EventArgs e)
