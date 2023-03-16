@@ -39,6 +39,12 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.BrowserTabs = new System.Windows.Forms.TabControl();
             this.panel = new System.Windows.Forms.Panel();
+            this.colorBgPanel = new System.Windows.Forms.Panel();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
+            this.colorBgBox = new System.Windows.Forms.PictureBox();
+            this.colorBg = new System.Windows.Forms.RadioButton();
             this.button2 = new System.Windows.Forms.Button();
             this.toggleBg = new System.Windows.Forms.RadioButton();
             this.txtUpDownBlue = new System.Windows.Forms.NumericUpDown();
@@ -71,6 +77,11 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.ToolStrip.SuspendLayout();
             this.panel.SuspendLayout();
+            this.colorBgPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.colorBgBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtUpDownBlue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtUpDownGreen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtUpDownRed)).BeginInit();
@@ -207,6 +218,8 @@
             // 
             // panel
             // 
+            this.panel.Controls.Add(this.colorBgPanel);
+            this.panel.Controls.Add(this.colorBg);
             this.panel.Controls.Add(this.button2);
             this.panel.Controls.Add(this.toggleBg);
             this.panel.Controls.Add(this.txtUpDownBlue);
@@ -232,6 +245,82 @@
             this.panel.Name = "panel";
             this.panel.Size = new System.Drawing.Size(400, 1412);
             this.panel.TabIndex = 3;
+            // 
+            // colorBgPanel
+            // 
+            this.colorBgPanel.Controls.Add(this.numericUpDown1);
+            this.colorBgPanel.Controls.Add(this.numericUpDown2);
+            this.colorBgPanel.Controls.Add(this.numericUpDown3);
+            this.colorBgPanel.Controls.Add(this.colorBgBox);
+            this.colorBgPanel.Location = new System.Drawing.Point(10, 1165);
+            this.colorBgPanel.Name = "colorBgPanel";
+            this.colorBgPanel.Size = new System.Drawing.Size(378, 235);
+            this.colorBgPanel.TabIndex = 21;
+            this.colorBgPanel.Visible = false;
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.numericUpDown1.Location = new System.Drawing.Point(263, 148);
+            this.numericUpDown1.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(112, 39);
+            this.numericUpDown1.TabIndex = 21;
+            this.numericUpDown1.ValueChanged += new System.EventHandler(this.bgNumericUpDown_Changed);
+            // 
+            // numericUpDown2
+            // 
+            this.numericUpDown2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.numericUpDown2.Location = new System.Drawing.Point(133, 148);
+            this.numericUpDown2.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDown2.Name = "numericUpDown2";
+            this.numericUpDown2.Size = new System.Drawing.Size(112, 39);
+            this.numericUpDown2.TabIndex = 20;
+            this.numericUpDown2.ValueChanged += new System.EventHandler(this.bgNumericUpDown_Changed);
+            // 
+            // numericUpDown3
+            // 
+            this.numericUpDown3.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.numericUpDown3.Location = new System.Drawing.Point(3, 148);
+            this.numericUpDown3.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDown3.Name = "numericUpDown3";
+            this.numericUpDown3.Size = new System.Drawing.Size(112, 39);
+            this.numericUpDown3.TabIndex = 19;
+            this.numericUpDown3.ValueChanged += new System.EventHandler(this.bgNumericUpDown_Changed);
+            // 
+            // colorBgBox
+            // 
+            this.colorBgBox.BackColor = System.Drawing.Color.White;
+            this.colorBgBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.colorBgBox.Location = new System.Drawing.Point(3, 3);
+            this.colorBgBox.Name = "colorBgBox";
+            this.colorBgBox.Size = new System.Drawing.Size(372, 122);
+            this.colorBgBox.TabIndex = 18;
+            this.colorBgBox.TabStop = false;
+            // 
+            // colorBg
+            // 
+            this.colorBg.AutoSize = true;
+            this.colorBg.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F);
+            this.colorBg.Location = new System.Drawing.Point(10, 1113);
+            this.colorBg.Name = "colorBg";
+            this.colorBg.Size = new System.Drawing.Size(298, 34);
+            this.colorBg.TabIndex = 20;
+            this.colorBg.Text = "Solid color background";
+            this.colorBg.UseVisualStyleBackColor = true;
+            this.colorBg.Click += new System.EventHandler(this.toggleColorBg);
             // 
             // button2
             // 
@@ -599,6 +688,11 @@
             this.ToolStrip.PerformLayout();
             this.panel.ResumeLayout(false);
             this.panel.PerformLayout();
+            this.colorBgPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.colorBgBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtUpDownBlue)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtUpDownGreen)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtUpDownRed)).EndInit();
@@ -667,5 +761,11 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel webPanel;
         private System.Windows.Forms.PictureBox spotify;
+        private System.Windows.Forms.RadioButton colorBg;
+        private System.Windows.Forms.Panel colorBgPanel;
+        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.NumericUpDown numericUpDown2;
+        private System.Windows.Forms.NumericUpDown numericUpDown3;
+        private System.Windows.Forms.PictureBox colorBgBox;
     }
 }

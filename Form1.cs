@@ -485,8 +485,6 @@ namespace ChromiumBrowser
 
             drawBackground(page);
 
-            drawBackground(page);
-
             page.Text = $"Tab {TabNum}";
 
             TabNum = TabNum += 1;
@@ -609,14 +607,22 @@ namespace ChromiumBrowser
 
         private void drawBackground(TabPage page)
         {
-            page.BackgroundImage = image;
-            if (repeatingBg)
+            if (!colorBg.Checked)
             {
-                page.BackgroundImageLayout = ImageLayout.Tile;
+                page.BackgroundImage = image;
+                if (repeatingBg)
+                {
+                    page.BackgroundImageLayout = ImageLayout.Tile;
+                }
+                else
+                {
+                    page.BackgroundImageLayout = ImageLayout.Stretch;
+                }
             }
             else
             {
-                page.BackgroundImageLayout = ImageLayout.Stretch;
+                page.BackColor = bgColor;
+                page.BackgroundImage = null;
             }
         }
 
@@ -884,11 +890,7 @@ namespace ChromiumBrowser
 
             if (!sidePanelOpened || prev != pcBox)
             {
-                if (prev == pcBox)
-                {
-                    sideBrowser.Load(address);
-                } 
-                else
+                if (prev != pcBox)
                 {
                     if (pcBox != whatsapp) { sideBrowser.Load($"{pcBox.Name}.com"); }
                     else { sideBrowser.Load($"web.{pcBox.Name}.com"); }
@@ -933,6 +935,87 @@ namespace ChromiumBrowser
         {
             if (!splitContainer1.IsSplitterFixed) { distance = splitContainer1.SplitterDistance; }
             webPanel.Width = distance - 75;
+        }
+
+        byte bgRed, bgGreen, bgBlue;
+        Color bgColor = new Color();
+
+        private void bgNumericUpDown_Changed(object sender, EventArgs e)
+        {
+            bgRed = (byte)numericUpDown3.Value;
+            bgGreen = (byte)numericUpDown2.Value;
+            bgBlue = (byte)numericUpDown1.Value;
+
+            bgColor = Color.FromArgb(bgRed, bgGreen, bgBlue);
+
+
+            foreach (TabPage page in mainPages)
+            {
+                page.BackColor = bgColor;
+                page.BackgroundImage = null;
+            }
+        }
+
+        private void SidePanel_Paint(object sender, PaintEventArgs e)
+        {
+            System.Drawing.Color topColor = borderColor;
+            System.Drawing.Color bottomColor = color;
+
+            // Define the gradient rectangle
+            Rectangle gradientRect = new Rectangle(
+                sidePanel.ClientRectangle.Right - 2,
+                sidePanel.ClientRectangle.Top,
+                2,
+                sidePanel.ClientRectangle.Height
+            );
+
+            // Define the gradient brush
+            System.Drawing.Drawing2D.LinearGradientBrush gradientBrush = new System.Drawing.Drawing2D.LinearGradientBrush(
+                gradientRect,
+                topColor,
+                bottomColor,
+                LinearGradientMode.Vertical
+            );
+
+            // Define the border pens
+            System.Drawing.Pen borderPen = new System.Drawing.Pen(gradientBrush, 8);
+
+            e.Graphics.DrawLine(borderPen, sidePanel.ClientRectangle.Right - 2, sidePanel.ClientRectangle.Top, sidePanel.ClientRectangle.Right - 2, sidePanel.ClientRectangle.Bottom);
+
+        }
+
+
+        private void ToolStrip_Paint(object sender, PaintEventArgs e)
+        {
+            var bounds = ToolStrip.ClientRectangle.Bottom - 1;
+            // Draw the bottom border only
+            e.Graphics.DrawLine(new System.Drawing.Pen(borderColor, 12), 0, bounds, ToolStrip.ClientRectangle.Width, bounds);
+            ToolStrip.Invalidate();
+        }
+
+        bool colorBgEnabled = false;
+        private void toggleColorBg(object sender, EventArgs e)
+        {
+            if (!colorBgEnabled)
+            {
+                colorBgPanel.Visible = false;
+                foreach (TabPage page in mainPages)
+                {
+                    page.BackgroundImage = image;
+                }
+                colorBgEnabled = true;
+            }
+            else
+            {
+                colorBgPanel.Visible = true;
+                foreach(TabPage page in mainPages)
+                {
+                    page.BackgroundImage = null;
+                }
+                colorBgEnabled = false;
+            }
+
+            colorBg.Checked = colorBgPanel.Visible;
         }
 
         private void SidePanel_Paint(object sender, PaintEventArgs e)
@@ -1045,6 +1128,8 @@ namespace ChromiumBrowser
             toggleBg.ForeColor = txtColor;
 
             txtBrush = new SolidBrush(txtColor);
+            toggleBg.ForeColor = txtColor;
+            colorBg.ForeColor = txtColor;
 
             BrowserTabs.Invalidate();
         }
